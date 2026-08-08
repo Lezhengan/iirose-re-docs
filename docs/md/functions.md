@@ -88,6 +88,8 @@ functionBtnDo(56);
 |---|---|
 | 普通文本 | 群聊公屏广播（走 `Utils.Filter.pubMsg` 过滤） |
 | `@xx` | 快捷面板（见上表 @命令列） |
+| `@@ 歌名` | 网易云**直搜直发**：取搜索结果第一首自动发送（L2883） |
+| `@ 歌名` | 打开**媒体搜索面板**（`demandHolder`，结果列表手动选，L2908） |
 | `~ 内容` | 发送弹幕（需绑定手机、房间允许） |
 | `<> 链接` | 分享媒体（自动解析 B 站/网易云等） |
 | `#…` | 特殊内容（频道/房间内指令） |
@@ -105,8 +107,11 @@ Utils.service.moveinputDo("@+");
 // 打开地图
 Utils.service.moveinputDo("@@");
 
-// 点播网易云音乐（触发 search_163Music.php 搜索后发送）
+// 网易云直搜直发（取第一首，不走选择框）
 Utils.service.moveinputDo("@@ 歌名");
+
+// 打开媒体搜索面板手动选歌（仅媒体分享房间）
+Utils.service.moveinputDo("@ 歌名");
 ```
 
 ## 三、房间操作：`Objs.mapHolder.function`

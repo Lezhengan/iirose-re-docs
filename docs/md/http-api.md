@@ -24,7 +24,7 @@
 
 | 接口 | 参数 | 平台 | 触发链接特征 | 返回处理 |
 |---|---|---|---|---|
-| `search_163Music.php` | `s`=关键词, `l`=1, `p`=1 | 网易云搜索（`@@ 歌名`） | `@@` 命令 | `result.songs[0]`，`fee=1` 弹 VIP 提示，拼 `<> 链接` 发送 |
+| `search_163Music.php` | `s`=关键词, `l`=1, `p`=1 | 网易云搜索（`@@ 歌名`） | `@@ 歌名`（L2883，**取第一首直发**）；`@ 歌名` 则是打开媒体搜索面板走 demandHolder 多引擎 | `result.songs[0]`，`fee=1` 弹 VIP 提示，拼 `<> 链接` 发送 |
 | `parse_163Music.php` | `i`=歌曲id, `l`="" | 网易云单曲（带歌词） | `music.163.com/…/song?id=` | `data[0].url`，`c.music.`→`.music.` 替换 + `#163=id` 后缀 |
 | `info_163Music.php` | `i`=歌曲id, `l`="" | 网易云单曲（fallback） | 同上其他格式 | `songs[0].rurl`，同上拼接 |
 | `info_163Music_radio.php` | `i`=电台id, `n`=1 | 网易云电台/节目 | `163.com/#/dj`/`/program` | `program.mainSong.rurl` |
