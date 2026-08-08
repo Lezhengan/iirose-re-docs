@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>IIROSE 逆向文档</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  <style>
+    /* 禁用 docsify 默认的 Google Fonts（fonts.gstatic.com 在部分网络下不可达），回退系统字体 */
+    :root {
+      --font-family: -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+      --font-family-mono: Consolas, "Courier New", monospace;
+    }
+    /* 顶部版本提示条：IIROSE 5 重构警告（全局可见） */
+    #version-banner {
+      position: sticky;
+      top: 0;
+      z-index: 9999;
+      padding: 8px 16px;
+      text-align: center;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #b45309;
+      background: #fef3c7;
+      border-bottom: 1px solid #fcd34d;
+    }
+    #version-banner strong { font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div id="version-banner">
+    <strong>⚠️ 版本提示：</strong>本文档基于当前 <strong>IIROSE 4</strong> 逆向构建。
+    若后续花园更新 <strong>IIROSE 5</strong>（据传会大幅重构前端），文中 DOM 操作、函数与命令大多可能失效。
+  </div>
+  <div id="app"></div>
+  <script>
+    window.$docsify = {
+      name: 'IIROSE 逆向文档',
+      nameLink: '/',
+      repo: '',
+      loadSidebar: 'sidebar.md',
+      subMaxLevel: 2,
+      maxLevel: 4,
+      search: {
+        placeholder: '搜索',
+        noData: '没有结果',
+        depth: 4
+      },
+      coverpage: false
+    }
+  </script>
+  <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
+</body>
+</html>
