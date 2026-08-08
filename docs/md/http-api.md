@@ -17,33 +17,48 @@
 
 ## 媒体解析（`lib/php/api/`）
 
-> 解析输入"链接"（URL 或分享文本），返回可播放的媒体信息，客户端拼装为 `<> url"名字"封面"作者` 消息格式发送到房间。
+> 解析输入"链接"（URL 或分享文本），返回可播放的媒体信息，客户端拼装为 `<> url"名字"封面"作者` 消息格式发送到房间（见 [点播/共享媒体](websocket/commands.md)）。
+> 触发入口是 `Utils.service.moveinputDo("<> 链接")`（L2948-3263 的分发器）。**部分平台不走 API，直接拼 WS 命令**（下表"方式"列）。
 
-| 接口 | 参数 | 平台 |
-|---|---|---|
-| `parse_163Music.php` | `v`/链接参数 | 网易云音乐（按链接类型分发） |
-| `info_163Music.php` | `i`=id | 网易云单曲信息 |
-| `info_163Music_radio.php` | `i`=电台id, `n`=1 | 网易云电台 |
-| `search_163Music.php` | `s`=关键词, `l`=类型, `p`=页 | 网易云搜索（l: 1歌曲/2歌手/3专辑/4歌单/5电台/6歌词） |
-| `search_163Music_list.php` | `i`=id, `t`=类型 | 网易云歌单/专辑/歌手详情（t: 0歌单/1专辑/2歌手/3其他） |
-| `parse_kugouMusic.php` | 链接 | 酷狗音乐 |
-| `parse_qqMusic.php` | 链接 | QQ音乐 |
-| `parse_taiheMusic.php` | 链接 | 太合音乐（百度音乐） |
-| `parse_bilibili.php` | `i`=id（BV/av，b23.tv 用 `*` 前缀） | B站视频（返回 `@...` 直接转发，或 `dv3` 直连指令） |
-| `parse_bilibiliLive.php` | `i`=直播间号 | B站直播 |
-| `parse_iqiyi.php` | 链接 | 爱奇艺 |
-| `parse_mgtv.php` | 链接 | 芒果TV |
-| `parse_tiktok.php` | 链接 | 抖音 |
-| `parse_kuaishou.php` | 链接 | 快手 |
-| `lizhi.php` | 链接 | 荔枝FM |
-| `ximalaya.php` | 链接 | 喜马拉雅 |
-| `5sing.php` | `c`=歌手, `i`=歌曲id | 5sing |
-| `douban.php` | 链接 | 豆瓣FM |
-| `echo.php` | 链接 | Echo |
-| `cors_media.php`（域 `z.iirose.com`） | `t`=类型, `s`=网易云歌曲id | 媒体 CORS 代理（跨域播放兜底，L35952） |
-| `search_${type}.php` | 动态拼接 | 表情/媒体通用搜索：非 http 前缀的 `d` 值拼成 `api/search_{d}.php`（L27211） |
-| `search_emoji.php` | GET 关键词 | 表情搜索 |
-| `translate.php` | POST `text` 等 | 文本翻译 |
+| 接口 | 参数 | 平台 | 触发链接特征 | 返回处理 |
+|---|---|---|---|---|
+| `search_163Music.php` | `s`=关键词, `l`=1, `p`=1 | 网易云搜索（`@@ 歌名`） | `@@` 命令 | `result.songs[0]`，`fee=1` 弹 VIP 提示，拼 `<> 链接` 发送 |
+| `parse_163Music.php` | `i`=歌曲id, `l`="" | 网易云单曲（带歌词） | `music.163.com/…/song?id=` | `data[0].url`，`c.music.`→`.music.` 替换 + `#163=id` 后缀 |
+| `info_163Music.php` | `i`=歌曲id, `l`="" | 网易云单曲（fallback） | 同上其他格式 | `songs[0].rurl`，同上拼接 |
+| `info_163Music_radio.php` | `i`=电台id, `n`=1 | 网易云电台/节目 | `163.com/#/dj`/`/program` | `program.mainSong.rurl` |
+| `search_163Music_list.php` | `i`=id, `t`=类型 | 网易云歌单/专辑/歌手 | `/playlist`、`/album`、`/artist` | 弹多级选择器选歌 |
+| `parse_taiheMusic.php` | `i`=歌曲id | 太合音乐（百度音乐） | `music.taihe.com/song/` | `songurl.url[]` 取最后一个有效 `file_link` |
+| `parse_kugouMusic.php` | `i`=id/hash, `t`=类型, `l`="" | 酷狗 | `kugou.com/song/#hash=`、`?id=`、`/mixsong/` | `t`=0 hash / 1 id / 2 分享 |
+| `parse_qqMusic.php` | `i`=songmid, `url`=来源类型, `l`="" | QQ音乐 | `y.qq.com/n/ryqq`、`i.y.qq.com`、`c.y.qq.com/base` | `url`=0 mid / 1 五段式 / 2 c.y.qq.com；封面拼 `y.gtimg.cn/music/photo_new/T002R800x800M000{mid}.jpg` |
+| `5sing.php` | `c`=歌手, `i`=歌曲id | 5sing | `5sing.kugou.com/m/detail/` | `data.hqurl\|\|lqurl\|\|squrl` |
+| `parse_iqiyi.php` | `v`=视频id | 爱奇艺（视频） | `iqiyi.com/v_`/`w_` | 返回直连 id → `socket.send("dv0"+id)` |
+| `parse_bilibili.php` | `i`=BV/av（b23.tv 用 `*` 前缀） | B站视频 | `bilibili.com/video/BV1`、`/av`、`bangumi`、`b23.tv` | 返回 `@链接` 转发，或 `socket.send("dv3"+id+"#"+分P)` |
+| `parse_bilibiliLive.php` | `i`=直播间号 | B站直播 | `live.bilibili.com` | 返回 `[名字,作者,封面,流,封面]`，`t18` 命令渲染 + 直接播放 |
+| `parse_mgtv.php` | `i`=视频id | 芒果TV | `mgtv.com/b/` | 返回 `[名字,副标题,地址]`，发 `m__4!4` 卡片 |
+| `parse_tiktok.php` | 链接对象 | 抖音 | `v.douyin.com`、`m.douyin.com/share/video` | 无水印地址 |
+| `parse_kuaishou.php` | 链接对象 | 快手 | `live.kuaishou.com`、`m.gifshow.com` | 无水印地址 |
+| `lizhi.php` | 链接 | 荔枝FM | `lizhi.fm` | 播客音频 |
+| `ximalaya.php` | 链接 | 喜马拉雅 | `ximalaya.com`、`xima.tv` | 播客音频 |
+| `echo.php` | 链接 | Echo回声 | `app-echo.com` | 音乐 |
+| `douban.php` | 链接 | 豆瓣FM | 豆瓣链接 | 音乐 |
+| `cors_media.php`（域 `z.iirose.com`） | `t`=类型, `s`=网易云歌曲id | 媒体 CORS 代理（跨域播放兜底，L35952） | 播放失败时 | — |
+| `search_${type}.php` | 动态拼接 | 表情/媒体通用搜索：非 http 前缀的 `d` 值拼成 `api/search_{d}.php`（L27211） | — | — |
+| `search_emoji.php` | GET 关键词 | 表情搜索 | — | — |
+| `translate.php` | POST `text` 等 | 文本翻译 | — | — |
+
+**不走 API 直接拼 WS 命令的平台**（链接特征匹配后直发，L3090-3139）：
+
+- **腾讯视频**：从链接提取 coverid/vid → `socket.send("dv1"+id)`（`v.qq.com/x/cover/`、`/x/page/`、`m.v.qq.com/play`）
+- **YouTube**：不走 PHP API，前端直接调 YouTube IFrame API（`shareYoutubeGetTime`，L3121）解析
+
+**点播类型编号**（`demandSend(类型,…)` 与 `m__4` 卡片平台索引）：
+
+| 编号 | 平台 | 编号 | 平台 |
+|---|---|---|---|
+| 0 | 网易云（`m__4@0`） | `!4` | 芒果TV |
+| 2 | QQ音乐 | `!8` | B站直播 |
+| 3 | 太合 | `%8` | 5sing |
+| 4 | 酷狗 | — | — |
 
 ## 支付（`lib/php/system/`）
 
