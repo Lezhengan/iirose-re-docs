@@ -38,6 +38,18 @@ Fallback = {
 //   连接地址：wss://m + 编号 + .iirose.com:443（isSocketHttp 时 :80）
 ```
 
+**协议（ws/wss）选择**（L2062 + L13311）：
+
+```js
+isSocketHttp = isJavaSocket && (sdkCode < 24 || Utils.settings("socketHttpProtocol"));
+// L13311 连接串：
+a = isSocketHttp ? "ws://m" + e + ".iirose.com:80" : "wss://m" + e + ".iirose.com:443";
+```
+
+- `isSocketHttp` 为真 → 明文 `ws://m{节点}.iirose.com:80`；否则 → TLS `wss://m{节点}.iirose.com:443`
+- 明文仅用于**安卓 Java WebView 且满足其一**：`sdkCode < 24`（安卓系统 < 7.0，TLS 兼容差）或设置项 `socketHttpProtocol` 开启（设置里可手动切换）
+- **PC 网页 / Electron / 新安卓一律 `wss://…:443`**；登录与所有消息收发（登入、心跳、房间、聊天、行情等）都走这条 WS 连接，协议本身不区分功能
+
 最终队列：
 
 | 地域 | 依次尝试 |
