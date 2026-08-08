@@ -140,7 +140,7 @@ Objs.mapHolder.function.houseSelect(0, function (rid) {
   Objs.mapHolder.function.roomchanger(rid);
 });
 
-// 会员分区房间选择器（对应热推面板"会员"tab）
+// "我管理的房子"选择器（热推面板"管理的房间"tab / shell 终端 switchHouse 选项 2）
 Objs.mapHolder.function.houseSelect(2, function (rid) {
   Objs.mapHolder.function.roomchanger(rid);
 });
@@ -150,7 +150,7 @@ var u = Objs.mapHolder.function.findUserByUid("用户uid");
 if (u) console.log(u);
 ```
 
-`houseSelect` 分区参数：`0`=输入房间名查询、`1`=按地区选择、`2/3/4/5`=按房间等级筛选（会员房等）。
+`houseSelect` 分区参数：`0`=输入房间名查询、`1`=按地区选择、`2`=我管理的房子、`3`=我的房子、`4`=我为星标成员的房子、`5`=我为成员的房子（后四类对应 shell 终端 `switchHouse` 命令选项）。
 
 ## 四、热推房间算法：`Utils.service.jumpToMaxPplRoom(n)`
 

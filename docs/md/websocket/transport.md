@@ -14,13 +14,15 @@ wss://m9.iirose.com:443   防 DDoS 兜底节点
 
 ## 进入房间
 
-连接建立后发送：
+连接建立后发送（`fetchroom`，L23733）：
 
 ```
-socket.send("%" + 房间id)
+socket.send("*" + JSON.stringify({ r: 房间id, n: 昵称, p: 密码, st: 状态, mo: 心情, fp: 指纹 }))
 ```
 
-`%a` = 刷新当前房间。服务器随后推送房间数据（`%` 前缀消息）。
+- 登录态另带 `lr`=上次房间、`i`=头像、`nc`=名字颜色、`s`=性别、`uid`、`li`=loginid、`la`=语言（完整字段见[发送命令](commands.md#进房--切房)）
+- 服务器随后推送房间数据（`%` 前缀消息）
+- 登录后跨房：`socket.send("m" + 房间id)`（密码房 `m房间id>密码`）
 
 ## 帧编码
 
@@ -39,7 +41,7 @@ for (msg of data) if (msg) socket.__onmessage(msg);
 
 ## 断线重连
 
-- **无心跳协议**：服务端不发送 ping/pong，仅靠数据流保活
+- **应用层心跳**：服务端不发 WebSocket 层 ping/pong，但会推送应用层 `c` 消息；客户端收到后通过 `patchedSetInterval` 每 2 秒回发一次 `socket.send("c")` 保活（L13687-13690）
 - 断线后调用 `location._reload()` **整页刷新**重新连接（不是透明重连）
 - 掉线消息在本地以"离线私聊"形式缓存
 

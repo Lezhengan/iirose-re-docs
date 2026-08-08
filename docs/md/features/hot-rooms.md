@@ -17,14 +17,14 @@
 
 ## 面板结构
 
-标题 = `languageArr[24][8]` = **「热推的房间」**，共 **4 个分区**：
+标题 = `languageArr[24][8]` = **「热推的房间」**，共 **4 个 tab**（语言包真实顺序，L11309：`["热推的房间","订阅的房间","管理的房间","历史的房间"]`）：
 
-| 分区 | 图标 | 数据源 |
+| tab | 图标 | 数据源 |
 |---|---|---|
-| 热推 | fire | `jumpToMaxPplRoom(1)` ← 核心算法 |
-| 历史 | history | `Utils.database("roomHistory")`（本机浏览历史） |
-| 订阅 | star | `Assets.subscribeRidArr`（订阅房间列表） |
-| 会员 | wallet-membership | `mapHolder.function.houseSelect(2,...)`（高级会员房间） |
+| 热推的房间 | fire | `jumpToMaxPplRoom(1)` ← 核心算法 |
+| 订阅的房间 | star | `Assets.subscribeRidArr`（订阅房间列表） |
+| 管理的房间 | wallet-membership | `mapHolder.function.houseSelect(2,...)`（我管理的房子） |
+| 历史的房间 | history | `Utils.database("roomHistory")`（本机浏览历史） |
 
 每个房间卡片展示：封面图、房间名、在线人数（`mdi-temperature-celsius` 温度图标）、语言标签。点击卡片进入房间。
 

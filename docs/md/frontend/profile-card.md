@@ -48,7 +48,7 @@ Objs.mapHolder.function.event.call(this, 7);  // 点击昵称/头像的 onclick
 | `mdi-at` / `mdi-web` | 邮箱 / 网站 | 邮箱：`mailto:xxx@xx.com`；网站：空格分隔多个链接 |
 | `mdi-storefront` | 店铺 | 店铺名（id 存 `sid` 属性），点击进商店 |
 | `mdi-home` / `mdi-city` / `mdi-cube` | 家 / 旅馆 / 沙盒房间 | 房间名列表，按 rid 前缀自动分栏：`5b792cb650749_`=沙盒、`5b792cac2b37f_`=旅馆、其余=家；点击进房 |
-| `mdi-home-account` | 会员房间 | 房间名列表，★=已订阅 |
+| `mdi-home-account` | 社区 / 所属房子 | 房间名列表（`languageArr[3][27]`=社区），★=已订阅；数据为名片 `ke` 字段的房子段 |
 | `mdi-shield-account` / `mdi-bank` / `mdi-cash-refund` | 信用 / 存款 / 贷款 | 数字，例：`88`、`1234`、`⚠️ 50`；信用/贷款可为负 |
 | `mdi-hand-heart` / `mdi-lightning-bolt` | 捐款 / 贡献 | 数字，例：`100` |
 | `mdi-chart-areaspline` | 股票 | 数字（股数），例：`50` |

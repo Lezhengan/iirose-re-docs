@@ -13,7 +13,7 @@
 | `login_guest_ajax.php` | POST | `n`=用户名 | 游客登录，成功返回空 |
 | `username_reset_ajax.php` | POST | `e`=邮箱 | 找回用户名 |
 | `password_reset_ajax.php` | POST | `n`=用户名, `q`=问题, `a`=答案 | 重置密码 |
-| `socialAccGet.php` | GET | — | 获取已绑定的社交账号 |
+| `socialAccGet.php` | POST | `v`=轮询ID | **QQ 扫码登录轮询**（L21311）：QQ 登录窗弹出后每 5 秒 POST 一次该轮询ID，成功返回扫码结果（非获取绑定账号） |
 | `socialAcc.php` | POST | `t`=类型, `k`=凭证, `d`=设备, `b`=是否beta | 社交账号绑定/登录（微信/QQ 等，login.js L280） |
 | `wxJsSdk.php` | GET | — | 微信 JS-SDK 签名（返回空格分隔字符串，供 `wx.config`，index.js L985） |
 
@@ -27,7 +27,7 @@
 | `search_163Music.php` | `s`=关键词, `l`=1, `p`=1 | 网易云搜索（`@@ 歌名`） | `@@ 歌名`（L2883，**取第一首直发**）；`@ 歌名` 则是打开媒体搜索面板走 demandHolder 多引擎 | `result.songs[0]`，`fee=1` 弹 VIP 提示，拼 `<> 链接` 发送 |
 | `parse_163Music.php` | `i`=歌曲id, `l`="" | 网易云单曲（带歌词） | `music.163.com/…/song?id=` | `data[0].url`，`c.music.`→`.music.` 替换 + `#163=id` 后缀 |
 | `info_163Music.php` | `i`=歌曲id, `l`="" | 网易云单曲（fallback） | 同上其他格式 | `songs[0].rurl`，同上拼接 |
-| `info_163Music_radio.php` | `i`=电台id, `n`=1 | 网易云电台/节目 | `163.com/#/dj`/`/program` | `program.mainSong.rurl` |
+| `info_163Music_radio.php` | `i`=电台id, `n`=1 | 网易云电台/节目 | `163.com/#/dj`/`/program` | `program.mainSong.rurl`；`n=1` 仅出现在 **getMediaLink 分享文本解析路径**（L12775），`<> 链接` 分发器（L3052）只传 `i` |
 | `search_163Music_list.php` | `i`=id, `t`=类型 | 网易云歌单/专辑/歌手 | `/playlist`、`/album`、`/artist` | 弹多级选择器选歌 |
 | `parse_taiheMusic.php` | `i`=歌曲id | 太合音乐（百度音乐） | `music.taihe.com/song/` | `songurl.url[]` 取最后一个有效 `file_link` |
 | `parse_kugouMusic.php` | `i`=id/hash, `t`=类型, `l`="" | 酷狗 | `kugou.com/song/#hash=`、`?id=`、`/mixsong/` | `t`=0 hash / 1 id / 2 分享 |
@@ -42,8 +42,8 @@
 | `lizhi.php` | 链接 | 荔枝FM | `lizhi.fm` | 播客音频 |
 | `ximalaya.php` | 链接 | 喜马拉雅 | `ximalaya.com`、`xima.tv` | 播客音频 |
 | `echo.php` | 链接 | Echo回声 | `app-echo.com` | 音乐 |
-| `douban.php` | 链接 | 豆瓣FM | 豆瓣链接 | 音乐 |
-| `cors_media.php`（域 `z.iirose.com`） | `t`=类型, `s`=网易云歌曲id | 媒体 CORS 代理（跨域播放兜底，L35952） | 播放失败时 | — |
+| `douban.php` | `c`=频道号 | 豆瓣FM **电台换台**（`radioNext` 切台，L16366） | 豆瓣电台切台按钮 | `song[0]` 歌曲信息（标题/歌手/播放地址），前端 `radioPlayer` 播放 |
+| `cors_media.php`（域 `z.iirose.com`） | `t`=类型, `s`=网易云歌曲id | 媒体 CORS 代理（L35952） | **媒体加载时自动代理**：检测到 `music.163.com/song/media/outer/url?id=` 网易云外链即改写走该代理（L35952），非播放失败兜底 | 代理后的可播 URL |
 | `search_${type}.php` | 动态拼接 | 表情/媒体通用搜索：非 http 前缀的 `d` 值拼成 `api/search_{d}.php`（L27211） | — | — |
 | `search_emoji.php` | GET 关键词 | 表情搜索 | — | — |
 | `translate.php` | POST `text` 等 | 文本翻译 | — | — |
@@ -74,7 +74,7 @@
 | 接口 | 域 | 参数 | 说明 |
 |---|---|---|---|
 | `getLocation.php` | — | — | 返回用户地域，用于 WS 节点选择与语言 |
-| `icon.php` | — | — | 图标资源（用户头像兜底） |
+| `icon.php` | `i`=头像名, `s`=1 | 头像图标数据（L3265：GET `{i}` 返回 `|` 分隔的图标数据集；`s=1` 变体用于头像丢失重取并写回 Cookie，L33649） |
 | `loadImgEdit.php` | `w.iirose.com`/`f.iirose.com` | `s`=编辑指令, `r`=尺寸 | 图片编辑/压缩加载（列表缩略图、主色调提取，L2550/L12411） |
 | `loadImg.php` | `z.iirose.com` | `s`=图片URL | 图片防盗链代理加载（下载/转存，L4471） |
 | `changes.php` | — | `v`=版本号, `l`=语言(0中/1英) | 更新日志动态数据（`\n#` 分节文本，L20958） |
