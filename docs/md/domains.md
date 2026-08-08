@@ -49,6 +49,7 @@ a = isSocketHttp ? "ws://m" + e + ".iirose.com:80" : "wss://m" + e + ".iirose.co
 - `isSocketHttp` 为真 → 明文 `ws://m{节点}.iirose.com:80`；否则 → TLS `wss://m{节点}.iirose.com:443`
 - 明文仅用于**安卓 Java WebView 且满足其一**：`sdkCode < 24`（安卓系统 < 7.0，TLS 兼容差）或设置项 `socketHttpProtocol` 开启（设置里可手动切换）
 - **PC 网页 / Electron / 新安卓一律 `wss://…:443`**；登录与所有消息收发（登入、心跳、房间、聊天、行情等）都走这条 WS 连接，协议本身不区分功能
+- **游客（未登录）同样建立 WS 连接并收发消息**：`SocketInit` 不依赖登录态；发言走 `inputSend`(L4029) → `msgfetch` → `socket.send` 无 `password` 检查（仅要求名字在房间在线列表，`X` 开头游客名可发）。游客被拦的只是私聊/会员/商城/订阅等特定功能（代码中 `password ? … : _alert(languageArr[7][34])` 模式），普通群聊发言与收消息均不受限
 
 最终队列：
 
