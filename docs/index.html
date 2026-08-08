@@ -11,27 +11,9 @@
       --font-family: -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
       --font-family-mono: Consolas, "Courier New", monospace;
     }
-    /* 顶部版本提示条：IIROSE 5 重构警告（全局可见） */
-    #version-banner {
-      position: sticky;
-      top: 0;
-      z-index: 9999;
-      padding: 8px 16px;
-      text-align: center;
-      font-size: 13px;
-      line-height: 1.6;
-      color: #b45309;
-      background: #fef3c7;
-      border-bottom: 1px solid #fcd34d;
-    }
-    #version-banner strong { font-weight: 700; }
   </style>
 </head>
 <body>
-  <div id="version-banner">
-    <strong>⚠️ 版本提示：</strong>本文档基于当前 <strong>IIROSE 4</strong> 逆向构建。
-    若后续花园更新 <strong>IIROSE 5</strong>（据传会大幅重构前端），文中 DOM 操作、函数与命令大多可能失效。
-  </div>
   <div id="app"></div>
   <script>
     window.$docsify = {
