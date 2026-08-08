@@ -25,6 +25,37 @@
 .cardTag { border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
 ```
 
+### 歌曲卡片主题色函数
+
+媒体卡片的主题色（`.cardTag` 的 `--card-color`/文字色）由一组颜色工具函数处理，全部在全局作用域可直接调用：
+
+| 函数 | 行号 | 作用 |
+|---|---|---|
+| `rgb2hex("R,G,B")` | L1790 | RGB 串 → hex 串（**不带 `#`**，如 `255,0,0` → `ff0000`） |
+| `hex2rgb("ff0000")` | L1786 | hex 串（可 3 位 `f00`，自动补全）→ `"255,0,0"` |
+| `darkOrLight("RGB|hex", 模式)` | L1795 | 判断颜色深浅（`模式`=1 时输入为 RGB 串，否则按 hex 算 RGB 和） |
+| `Utils.getDLColor(浅色?, "R,G,B"[, 阈值])` | L6083 | 自动适配亮/暗主题（DL=Dark/Light） |
+| `Utils.randomColor(是否彩色?)` | L6019 | 随机颜色（1=HSL 高饱和亮色，0=纯随机 RGB） |
+| `Utils.hslToRgb(h, s, l)` / `Utils.rgbToHsl(r, g, b)` | L6022/6028 | HSL ↔ RGB 双向转换 |
+
+**getDLColor 是卡片颜色核心**（L6083）：卡片消息带主题色时，暗色主题下保持原色，亮色主题下自动**加深**保证可读性（反之亦然），`theme` 为全局 `Variable.theme` 布尔：
+
+```js
+// 卡片取色完整链路（论坛卡片渲染 L21945）
+// 消息数据段 u[3] 的前 6 位是主题色 hex
+var cardColor = rgb2hex(Utils.getDLColor(0, hex2rgb(u[3].substr(0, 6)), 400));
+// => 结果用于 .cardTagCBox 的 color: #xxx（亮色主题时已自动调深）
+
+// 自己直接用：
+rgb2hex("255,100,50");                      // "ff6432"
+hex2rgb("ff6432");                           // "255,100,50"
+Utils.getDLColor(0, "255,255,255", 400);     // 亮色主题下把纯白调深
+Utils.randomColor(1);                        // 随机 HSL 亮色，返回 RGB 串
+darkOrLight("255,255,255", 1);               // true（亮色）
+```
+
+> 注意：`rgb2hex`/`hex2rgb`/`darkOrLight` 是**全局函数**（非 `Utils.` 前缀）；`getDLColor` 等是 `Utils` 对象方法。所有函数经源码核实存在（`verify_doc_functions.js` 校验通过）。
+
 ## 二、房间卡片（地图/热推通用）
 
 由 `mapHolder.function.getRoomModHtml` 生成（reference/src/messages.js L22800），地图树、热推、选房器等所有房间列表通用：

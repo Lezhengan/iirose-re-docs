@@ -221,6 +221,29 @@ Utils.sync(0, "确认要这样做吗？", function (ok) {
 });
 ```
 
+### 颜色工具（卡片主题色 / RGB↔hex）
+
+媒体卡片主题色处理的一组工具（详见[卡片 DOM](frontend/cards.md#歌曲卡片主题色函数)）：
+
+| 函数 | 行号 | 作用 |
+|---|---|---|
+| `rgb2hex("255,0,0")` | L1790 | RGB 串 → hex（**不带 #**） |
+| `hex2rgb("f00")` | L1786 | hex（3 位自动补全）→ RGB 串 |
+| `darkOrLight("RGB\|hex", 模式)` | L1795 | 判断颜色深浅（模式=1 按 RGB 串） |
+| `Utils.getDLColor(浅色?, "R,G,B"[, 阈值])` | L6083 | 亮/暗主题自动适配（卡片取色核心） |
+| `Utils.randomColor(1)` | L6019 | 随机色（1=HSL 亮色 / 0=纯随机） |
+| `Utils.hslToRgb(h, s, l)` / `Utils.rgbToHsl(r, g, b)` | L6022/6028 | HSL ↔ RGB 双向转换 |
+
+```js
+rgb2hex("255,100,50");                    // "ff6432"
+hex2rgb("ff6432");                         // "255,100,50"
+Utils.getDLColor(0, "255,255,255", 400);   // 亮色主题下把纯白调深
+Utils.randomColor(1);                      // 随机 HSL 亮色
+darkOrLight("255,255,255", 1);             // true（亮色）
+```
+
+> `rgb2hex` / `hex2rgb` / `darkOrLight` 是**全局函数**；`getDLColor` 等是 `Utils` 方法。
+
 ## 七、设置与本地数据：`Utils.settings` / `Utils.database` / `removeSettings` / `removeDatabase`
 
 （L6145-6157）读写"设置"和"本地数据库"两个持久层，是**官方存储机制的唯一入口**。

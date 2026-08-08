@@ -78,7 +78,58 @@
 | `#contentCopyHolder` | 复制中转 | `document.execCommand('copy')` | — |
 | `#alertHolder` | 消息通知容器（自动消失） | `_alert(...)` 入队 | L1712 |
 
-## 八、常用操作速记
+## 八、表情 / 图包面板（`#faceHolder`）
+
+「图包」= 表情面板（`Utils.service.emoji()` 打开）的**第 4 个分类**（p=4，"我的图包"），是**用户自定义表情收藏**。DOM 结构与源码（reference/src/messages.js L32589-32890，`Init.faceHolder`）：
+
+```
+#faceHolder（整个表情面板，display 控制显隐）
+├─ div:first（分类 tab 条：最近/颜文字/表情/贴图/图包…）
+│  └─ span[eq]（分类 tab，eq=0~6，点击调 Init.faceHolderBuild / panelAnimate(18)）
+├─ div:next（内容区，动态 append）
+│  └─ .emojiContentBox[index="4"]（图包分类的盒子）
+│     ├─ .emojiContent（内容滚动区）
+│     │  └─ .faceHolderBox[p="包id"]（每个图包一格）
+│     │     ├─ .faceHolderBoxChildItem[c="图片链接"]（单个表情）
+│     │     │  └─ .faceHolderBoxChildItemC > .emojiImg img
+│     │     └─ .faceHolderBoxChildItem[带 mdi-* 图标]（p=0 我的图包专属按钮）
+│     └─ .emojiPage（图包页码条）
+│        └─ .faceHolderPageItem[p="包id"] > .emojiPageImg img（图包封面缩略图）
+```
+
+**"我的图包"（p=0）专属按钮**（L32782，点表情后 `panelAnimate(18,...)` 展开）：
+
+| 按钮图标 | 功能 |
+|---|---|
+| `.mdi-cog` | 进入管理模式（拖拽排序，`Utils.Drag.sortable`） |
+| `.mdi-plus` | 从输入框图片加入图包 |
+| `.mdi-upload` | 上传本地图片（`btnUpload`） |
+| `.mdi-camera` | 拍照添加 |
+| `.mdi-magnify` | 搜索表情（`btnSearch`） |
+
+**核心对象与函数**（全部源码核实）：
+
+- `Objs.faceHolder.faceHolderBoxChildPArr4` — 图包页集合（jQuery）
+- `Objs.faceHolder.emojiExtArr` — 服务端返回的图包 id 列表
+- `Objs.faceHolder.btnUpload` / `.btnSearch` — 上传/搜索按钮
+- `faceHolderP2[4]` — 当前选中的图包页；`faceHolderP3[4]` — 各页滚动位置
+- `Utils.service.addToEmoji(图片链接)`（L4361）— **把一个图片加入我的图包**（自动切到图包分类）
+- `Utils.emojiManager(包id, true/false)`（L32751）— 添加/移除图包
+- `socket.send(")~版本号")`（L32617）— 请求我的图包列表（`myEmojiVer`/`myEmoji` 存 localStorage）
+- 图包数据接口：`lib/system/data/shop/emoji/index`（列表）、`lib/system/data/shop/emoji/data/{包id}`（每包表情）
+
+```js
+// 示例：把当前输入框里的图片链接加入图包
+Utils.service.addToEmoji("https://example.com/a.png");
+
+// 示例：模拟点击某图包页
+Objs.faceHolder.faceHolderBoxChildPArr4.eq(1).click();
+
+// 示例：JS 直接插入一张图包表情到输入框（图包数据结构 [链接, 兜底图]）
+// 参考 L32743：图包表情实际请求 static + "lib/assets/emoji/包id/文件名"
+```
+
+## 九、常用操作速记
 
 ```js
 // 关闭侧边栏
