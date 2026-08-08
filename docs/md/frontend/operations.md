@@ -65,6 +65,84 @@ Utils.Filter.pubMsg = function (t) {
 };
 ```
 
+### 5. 劫持输入框发送（改写发言 / 插件开发）
+
+用户按回车发送的完整链路：
+
+```
+#moveinput keydown → Utils.service.inputSend(L4029)
+  → Utils.service.moveinputDo(文本)(L2832，解析 @ / @@ / <> / ~ / # 命令)
+      → 普通文本过 Utils.Filter.pubMsg 过滤(L2251)
+        → msgfetch({m:...})(L14034，渲染本地气泡)
+          → socket.send(JSON)
+```
+
+四个劫持层级（由细到粗）：
+
+| 层级 | 拦截点 | 覆盖范围 | 适用场景 |
+|---|---|---|---|
+| ① 输入框 `keydown`（capture 阶段） | 用户按 Enter 时 | 仅手动输入框 | 转换/指令类插件（如"古风小生"） |
+| ② `Utils.service.moveinputDo` | 输入框统一入口 | 手动输入 + 表情/快捷面板发出 | 内容改写 |
+| ③ `msgfetch` | 群聊/私聊发送函数 | 所有聊天消息（含脚本发出） | 全量改写 / 统计 |
+| ④ `socket.send` | 所有 WS 出站 | 一切消息（含命令、点播卡） | 深度 hook（**需过滤防误伤**） |
+
+**方案 ①（推荐，最安全）**——在捕获阶段接管 Enter，改写后走官方完整链路：
+
+```js
+// 注意捕获阶段(true)：先于花园的 jQuery keydown 执行，stopImmediatePropagation 能拦住原发送
+moveinputO.addEventListener("keydown", function (e) {
+  if (e.key === "Enter" && !e.ctrlKey && this.value && !/^[@<>~#]/.test(this.value)) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    var conv = keigo(this.value);          // 你的转换函数
+    moveinput.val("");                     // 官方 inputSend 也是先清空再发
+    Utils.service.moveinputDo(conv);       // 走完整官方链路（过滤/命令解析/发送）
+  }
+}, true);
+```
+
+**方案 ②（可随时开关）**——monkey-patch 统一入口，正则跳过所有命令前缀：
+
+```js
+var _origDo = Utils.service.moveinputDo;
+var keigoOn = true;                        // 悬浮球开关
+Utils.service.moveinputDo = function (e, t) {
+  if (keigoOn && typeof e === "string" && e && !/^[@<>~#]/.test(e)) {
+    e = keigo(e);                          // 只转"普通文本"，命令不动
+  }
+  return _origDo.call(this, e, t);
+};
+```
+
+**方案 ④（你现在 Hook `socket.send` 的做法）**——必须过滤，否则会拦坏内部命令和点播卡：
+
+```js
+var _send = socket.send.bind(socket);
+socket.send = function (d) {
+  if (typeof d === "string" && d[0] === "{") {          // 聊天消息都是 JSON
+    try {
+      var o = JSON.parse(d);
+      if (o && typeof o.m === "string" && o.m && !/^m__/.test(o.m) && o.g === undefined) {
+        o.m = keigo(o.m);                               // 改内容
+        d = JSON.stringify(o);
+      }
+    } catch (e) {}
+  }
+  return _send(d);
+};
+```
+
+**防误伤清单**（不改写的消息）：
+
+| 特征 | 原因 |
+|---|---|
+| 开头 `@` / `@@` / `<>` / `~` / `#` | `moveinputDo` 把它们当命令解析（面板/点播/弹幕） |
+| `m` 字段以 `m__` 开头 | 点播卡片（`m__4@…`），改写会破坏卡片格式 |
+| 有 `g` 字段的 JSON | 私聊消息（`msgfetch(0, …, t, i)` 路径），如需改写要走另一分支 |
+| 纯文本命令（`%` 进房、`+@` whois、`Te#` 行情…） | 不是 JSON，方案 ④ 的 `d[0]==="{"` 已天然排除 |
+
+> 提示：方案 ④ 里改的是已过 `pubMsg` 的内容（普通群聊文本前可能有不可见防伪字符），转换正则一般不受影响；方案 ①② 改的是用户原始输入，最干净。
+
 ## 三、自动发送与插入文本
 
 ```js
