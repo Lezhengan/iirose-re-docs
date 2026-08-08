@@ -3,6 +3,8 @@
 > 均为 GET/POST 明文请求，返回 JSON 字符串或原始文本。**域名按业务拆分**（index.js L114-141）：`a.iirose.com`=API、`b.iirose.com`=业务、`f.iirose.com`=上传、`r.iirose.com`=回显前缀、`z.iirose.com`=辅助(helper)、`w.iirose.com`=代理(agent)、`d.iirose.com`=盾/支付(shield)、`s.iirose.com`=静态、`mx.iirose.com`=地域检测。
 > 下表"域"列省略时即 `https://a.iirose.com/`。
 
+> ⚠️ **股票/加密币/A股行情没有 HTTP 接口**：数据全部走 WS（`Te`/`Tk`/`Ta` 前缀，打开面板时 `socket.send("Te#")` 请求），HTTP 仅有静态 logo 资源（`images/invest/*/icon.json` 与 `.png`）。完整协议见 [投资/行情（WS）](websocket/commands.md#投资行情t-前缀)。
+
 ## 登录/账号（`lib/php/system/`）
 
 | 接口 | 方法 | 参数 | 说明 |

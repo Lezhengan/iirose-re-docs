@@ -146,13 +146,112 @@ socket.send(JSON.stringify({
 | `$702` | 解绑推送/微信绑定 |
 | `$` | 状态查询 |
 
-## 行情（`T` 前缀）
+## 投资/行情（`T` 前缀）
 
-| 命令 | 功能 |
-|---|---|
-| `Tk#…` | 加密币行情 |
-| `Te#…` | 中华币/积分 |
-| `Ta#…` | 股票行情 |
+> 股票、加密币、A股行情**全部走 WS，没有 HTTP 行情接口**（HTTP 只有静态 logo 资源，见下）。三个行情面板共用同一套 `T` 协议：首字母 `k`/`e`/`a` 区分市场，第二位是子命令。
+
+| 市场 | 首字母 | 面板 DOM | 按钮 `functionBtnDo` | 数据入口 | 面板配置（messages.js） |
+|---|---|---|---|---|---|
+| 加密币 | `Tk` | `#cryptoHolder` | `112` | `Objs.cryptoHolder.Variable.coins` | L20624，主色 `#6e7fde` |
+| **美股** | `Te` | `#stockHolder` | `113` | `Objs.stockHolder.Variable.coins` | L20676，主色 `#B31942` |
+| 中国A股 | `Ta` | `#chinaHolder` | `114` | `Objs.chinaHolder.Variable.coins` | L20796，主色 `#DE2910` |
+
+三个面板的标签均为 `Init.movePanel(12/13/14)` 动态构建，统一由 `Init.exchangeFn(H)`（L16957）生成全部函数 + `Init.exchangeMount(d,H)`（L16883）初始化。
+
+### 打开面板（请求全量行情）
+
+打开面板即请求该市场全量行情列表：
+
+```js
+socket.send("Tk#");   // 加密币
+socket.send("Te#");   // 美股
+socket.send("Ta#");   // 中国A股
+```
+
+### 主动命令（`T` + 首字母 + 子命令）
+
+以下 `P.op` 指 `Te`/`Tk`/`Ta`。`m` 开头为**序号**（`Variable.seq`，本地自增），`c` 开头（仅加密币 `Tk`）为按 hash 的币。字段逗号分隔。
+
+| 命令 | 功能 | 源码 |
+|---|---|---|
+| `{op}#` | 重新请求行情列表 | L17830 |
+| `{op}g` | **签到**（领花钞） | L17029 |
+| `{op}r{榜}` | 排行榜：`g`=盈利、`l`=亏钱、`w`=胜率、`a`=持仓货值 | L17385 |
+| `{op}p{币种},{周期}` | 请求 K 线：周期 `60`/`300`/`900`/`3600`/`86400`/`604800`（1分~周） | L17180 |
+| `{op}h{类}` | 历史记录：`o`=成交、`p`=期权 | L17077 |
+| `{op}v` | 请求交易统计 | L17561 |
+| `{op}z` | 订阅成交动态流 | L17561 |
+| `{op}zu` | 取消成交动态流 | L17569 |
+| `{op}bm{seq},{币种},{数量}` | 现货**买入**（A股整数手、`lot100`） | L17637 |
+| `{op}em{seq},{币种},{数量}` | 现货**卖出** | L17637 |
+| `{op}lm{seq},{币种},{多空},{数量},{杠杆}` | 合约**开仓**（美股/加密币） | L17704 |
+| `{op}cm{seq},{仓位id},{数量}` | 合约**平仓** | L17272 |
+| `{op}y{仓位id},{止盈},{止损}` | 设置止盈止损 | L17304 |
+| `{op}ds,{方向},{币种},{数量},{价格}[,杠杆][,止损]` | **限价委托**：方向 `0`=现货买/`1`=现货卖/`2`=融资买/`3`=融券卖 | L18028 |
+| `{op}dc,{单id}` | **撤单** | L17319 |
+| `{op}as,m{seq},{币种},{方向},{目标价}` | 设置**价格预警**（方向 `0`=涨到/`1`=跌到） | L17608 |
+| `{op}ad,{预警id}` | 删除价格预警 | L17032 |
+| `{op}om{seq},{币种},{多空},{金额},{期限}` | **二元期权**押注（A股/美股） | L17762 |
+| `{op}tm{seq},{币种},{看涨跌},{行权%(K)},{期限s},{张数}` | **标准期权**（权利金） | L17776 |
+| `{op}fs,{0活期/1定期},{金额}` | 存入**理财**（≥100 钞） | L17333 |
+| `{op}fr,{单id}` | 赎回理财 | L17336 |
+
+### 服务端推送解析（`case "T"` 路由 → `exchangeFn(P).onMsg`，L17818）
+
+接收端 L13353 按 `e[1]` 分发到 `cryptoHolder`/`stockHolder`/`chinaHolder` 的 `.function.onMsg(e)`，`e[2]` 为子命令、`e.substr(3)` 为数据体。字段多以 `"` 分隔条目、条目内逗号分隔：
+
+| 子命令 | 含义 | 数据格式（`"` 分隔） |
+|---|---|---|
+| `S` | **市场状态** | `1`=盘中、`2`=盘前、`3`=盘后、其它=休市（A股另算时段，只分盘中/休市） |
+| `#` | **全量行情列表** | 每条 `代码,名称,现价,昨收,价格精度,数量精度,今开[,涨停,跌停]` → `Variable.coins` |
+| `P` | **实时价格推送** | `代码"现价"昨收""今开`（`updatePx`，L17097） |
+| `c` | 花钞余额更新 | 数字 |
+| `H` | **持仓全量** | 每条 `代码,数量[,今日数量]` → `Variable.hold` |
+| `B`/`E` | 买入/卖出成交 | 见 `onTrade`（L17108） |
+| `O` | 合约仓位全量 | 每条 `id,方向,币种,数量,开仓价,杠杆,保证金,强平价[,资金费,止盈,止损]` |
+| `L`/`C` | 开仓 / 平仓确认 | `onOpen`/`onClose` |
+| `!` | 实时爆仓 | `仓位id"币种"保证金` |
+| `R` | 离线期间爆仓通知 | 多条 `仓位id,币种,保证金` |
+| `K` | **K线数据** | `代码"周期"` + `;` 分隔的 `开,高,低,收` 段 → `Variable.chartBars`（canvas 绘制） |
+| `w`/`n` | 二元期权开 / 结算 | `onBinaryOpen`/`onBinarySettle` |
+| `Z`/`N` | 二元期权全量 / 离线通知 | — |
+| `T`/`u` | 标准期权开 / 结算 | `onOptionOpen`/`onOptionSettle` |
+| `U`/`M` | 标准期权全量 / 离线通知 | — |
+| `G`/`g` | 签到状态 / 签到结果 | `G`: `今日已签,连续,奖励`；`g`: `奖励,连续,累计,余额` |
+| `A`/`X` | 预警设置成功 / 删除 | — |
+| `V`/`W` | 预警全量 / 触发通知 | — |
+| `h` | 历史记录回包 | 类型 + 条目（`renderHistList`） |
+| `Y`/`D` | 止盈止损更新 / 离线触发 | — |
+| `F`/`x`/`i`/`j` | 限价委托挂单 / 撤单 / 成交 / 全量 | — |
+| `S`/`I`/`J` | 理财存入 / 赎回 / 全量 | — |
+| `Q`/`q` | 排行榜 / 今日战绩 | — |
+| `v` | 交易统计回包 | `renderStats`（总盈亏/胜率/回撤等 10 项） |
+| `z` | 成交动态流 | `A`开头=全量、`O`开头=实时单条（`prependTrade`，只显示前 50 条） |
+| `*` | **错误提示** | `"错误码` → `errText` 中文（如 `nosym`/`nohold`/`t1`/`climit`/`noorder`…） |
+
+### 数据存储与渲染
+
+- 行情对象：`Objs.{crypto|stock|china}Holder.Variable.coins[代码] = { name, coin(现价), prev(昨收), pd(价格精度), qd(数量精度), open(今开), up/dn(A股涨跌停) }`（L17942）
+- 自选收藏：localStorage `stockFav` / `cryptoFav` / `chinaFav`（JSON 数组，L16995）
+- 面板 UI 记忆：localStorage `stockUI` / `cryptoUI` / `chinaUI`（页签/排序/K线周期等，L17853）
+- 涨跌颜色 class：`crUp`/`crDn`（CSS 变量 `--cu`/`--cd`），面板右上角齿轮可切换"红涨绿跌"（Cookie `crColorRev_面板id`）
+- 价格精度：`formatThousand`（千分位），`≈$现价/180`（美股）/`≈¥现价/25`（A股）折算参考（L17186）
+
+### 静态资源（唯一 HTTP 请求）
+
+```js
+// 面板构建时加载（$.getJSON）：
+https://static.iirose.com/images/invest/stock/icon.json    // 美股 logo 名映射（L20788）
+https://static.iirose.com/images/invest/crypto/icon.json   // 加密币（L20668）
+// 单个 logo（未命中映射时按代码小写拼）：
+https://static.iirose.com/images/invest/stock/{代码小写}.png
+https://static.iirose.com/images/invest/crypto/{代码小写}.png
+https://static.iirose.com/images/invest/china/{代码小写}.png
+```
+
+### 旧版"炒股"面板（`stockOldHolder`）
+
+侧边栏"炒股"按钮 `functionBtnDo(9)` 打开的是**旧版**面板（`Init.movePanel(0)`，L18050），数据不走 `T` 协议，而是包含在房间载荷 `*` 推送里（L13361）：`*"股票名#代码 价格$…`，由 `Objs.stockOldHolder.function.stockUpdate(...)` 解析成 `[代码,现价,量,涨跌]`。新版三个行情面板（112/113/114）已取代它，但仍保留。
 
 ## 其他前缀命令族
 
