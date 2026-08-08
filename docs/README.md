@@ -63,7 +63,7 @@ IIROSE（蔷薇花园）是一个多功能网页聊天室。本项目通过解�
 | 文件 | 说明 |
 |---|---|
 | <a href="reference/src/messages.js" target="_blank">messages.js</a> | 登录后主应用还原源码（36600 行） |
-| <a href="reference/src/messages.html" target="_blank">messages.html</a> | 主应用页面（全部 DOM 定义，1.6MB） |
+| <a href="reference/src/messages.html.txt" target="_blank">messages.html</a> | 主应用页面（全部 DOM 定义，1.6MB；`.txt` 后缀避免被浏览器渲染成页面） |
 | <a href="reference/src/login.js" target="_blank">login.js</a> | 登录/注册页还原源码 |
 | <a href="reference/src/index.js" target="_blank">index.js</a> | 引导壳还原源码 |
 | <a href="reference/extract_output.json" target="_blank">extract_output.json</a> | 接口/命令提取原始数据 |
