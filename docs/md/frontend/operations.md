@@ -67,6 +67,13 @@ Utils.Filter.pubMsg = function (t) {
 
 ### 5. 劫持输入框发送（改写发言 / 插件开发）
 
+花园有**两个聊天输入框**，发送链路都会汇入 `Utils.service.moveinputDo`：
+
+| 输入框 | 位置 | Enter 发送链路 |
+|---|---|---|
+| `#moveinput` | 底部主聊天框 | `inputSend`(L4029) → `moveinputDo` |
+| `#homeHolderMsgContentInputBox` | 首页频道框（`homeHolder` 面板，messages.html 静态定义，tab 切换显隐） | `keydown`(L33503) → 房间tab `moveinputDo(t)` / 广播等tab `moveinputDo("~ "+t)` / 私信tab 不发 |
+
 用户按回车发送的完整链路：
 
 ```
@@ -86,18 +93,27 @@ Utils.Filter.pubMsg = function (t) {
 | ③ `msgfetch` | 群聊/私聊发送函数 | 所有聊天消息（含脚本发出） | 全量改写 / 统计 |
 | ④ `socket.send` | 所有 WS 出站 | 一切消息（含命令、点播卡） | 深度 hook（**需过滤防误伤**） |
 
-**方案 ①（推荐，最安全）**——在捕获阶段接管 Enter，改写后走官方完整链路：
+**方案 ①（推荐，最安全）**——在捕获阶段接管 Enter，改写后走官方完整链路（`activeElement` 判断焦点框，**双输入框通吃**）：
 
 ```js
-// 注意捕获阶段(true)：先于花园的 jQuery keydown 执行，stopImmediatePropagation 能拦住原发送
-moveinputO.addEventListener("keydown", function (e) {
-  if (e.key === "Enter" && !e.ctrlKey && this.value && !/^[@<>~#]/.test(this.value)) {
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    var conv = keigo(this.value);          // 你的转换函数
-    moveinput.val("");                     // 官方 inputSend 也是先清空再发
-    Utils.service.moveinputDo(conv);       // 走完整官方链路（过滤/命令解析/发送）
-  }
+document.addEventListener("keydown", function (e) {
+  if (e.key !== "Enter" || e.ctrlKey) return;
+  var inp = e.target;
+  if (!inp || inp.tagName !== "TEXTAREA") return;
+  if (inp.id !== "moveinput" && inp.id !== "homeHolderMsgContentInputBox") return;
+  var before = inp.value;
+  if (!before.trim() || /^[@<>~#]/.test(before)) return;   // 命令/空输入放行
+  var conv = keigo(before);                                // 你的转换函数
+  if (conv === before) return;                             // 无变化 → 放行原发送
+  e.preventDefault();
+  e.stopImmediatePropagation();
+  // 首页框：房间tab 直接发；广播等tab 转弹幕；私信tab 放行
+  var isHome = inp.id === "homeHolderMsgContentInputBox";
+  var curP = 0;
+  try { curP = isHome ? Objs.homeHolder.Variable.currentP : 0; } catch (err) {}
+  if (isHome && curP === 2) return;
+  inp.value = "";
+  Utils.service.moveinputDo(isHome && curP !== 1 ? "~ " + conv : conv);
 }, true);
 ```
 
