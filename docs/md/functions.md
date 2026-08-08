@@ -59,9 +59,9 @@
 | 101 | `@+` | **热推的房间** `roomSplashHolder` |
 | 110 | `@.` | 银行 `bankHolder` |
 | 111 | `@;` | 伴侣 `partner` |
-| 112 | — | 加密币行情 `cryptoHolder` |
-| 113 | — | 股票行情 `stockHolder` |
-| 114 | — | 中华币行情 `chinaHolder` |
+| 112 | — | 加密币行情 `cryptoHolder`（侧边栏按钮 `display:none` 隐藏，调用此编号可调出） |
+| 113 | — | 美股行情 `stockHolder`（同上隐藏；**默认可见股票入口是 `9` 炒股 `stockOldHolder`**） |
+| 114 | — | A股行情 `chinaHolder`（同上隐藏） |
 | 120 | — | 默认壁纸选择 |
 | 121 | — | 背景移动 |
 | 122 | — | 歌词开关 |

@@ -149,6 +149,7 @@ socket.send(JSON.stringify({
 ## 投资/行情（`T` 前缀）
 
 > 股票、加密币、A股行情**全部走 WS，没有 HTTP 行情接口**（HTTP 只有静态 logo 资源，见下）。三个行情面板共用同一套 `T` 协议：首字母 `k`/`e`/`a` 区分市场，第二位是子命令。
+> ⚠️ **默认看不到这三个面板**：`Tk`/`Te`/`Ta` 对应侧边栏 `functionBtnDo(112/113/114)` 三个按钮，在 `messages.html` 中是 `style="display:none"` 的**隐藏占位按钮**（`functionBtnFont` 为空文案），需自定义脚本（如 `functionBtnDo(113)` 或直接 `socket.send("Te#")`）才能调出数据。默认可见的**"炒股"按钮**（`functionBtnDo(9)`）打开的是**旧版 `stockOldHolder` 面板**，数据走 `*` 房间载荷（见文末）。
 
 | 市场 | 首字母 | 面板 DOM | 按钮 `functionBtnDo` | 数据入口 | 面板配置（messages.js） |
 |---|---|---|---|---|---|
@@ -249,9 +250,24 @@ https://static.iirose.com/images/invest/crypto/{代码小写}.png
 https://static.iirose.com/images/invest/china/{代码小写}.png
 ```
 
-### 旧版"炒股"面板（`stockOldHolder`）
+### 默认入口："炒股"面板（`stockOldHolder`）
 
-侧边栏"炒股"按钮 `functionBtnDo(9)` 打开的是**旧版**面板（`Init.movePanel(0)`，L18050），数据不走 `T` 协议，而是包含在房间载荷 `*` 推送里（L13361）：`*"股票名#代码 价格$…`，由 `Objs.stockOldHolder.function.stockUpdate(...)` 解析成 `[代码,现价,量,涨跌]`。新版三个行情面板（112/113/114）已取代它，但仍保留。
+花园侧边栏「消费」分组里默认可见的**"炒股"按钮** `functionBtnDo(9)` 打开的是**旧版**面板（`Init.movePanel(0)`，L18050，面板槽位 `panelAnimate(26)`），**数据不走 `T` 协议**，而是包含在房间载荷 `%*` 推送里（L13361）：`"` 分隔的数据段内以 `#` 分隔银行与股票数据，股票部分再用 `$` 分隔价格字段，由 `Objs.stockOldHolder.function.stockUpdate(...)`（L18069）解析渲染"总市值 / 现价 / 涨跌"。功能很简单（现价/买入/卖出）。
+> 上文的 `Te`/`Tk`/`Ta` 三个完整行情面板是**预留/隐藏**功能，侧边栏按钮被 `display:none` 隐藏，官方前端并未默认展示；用 `functionBtnDo(113)` 等可直接调出对应面板。
+
+### 用脚本调出隐藏行情面板
+
+```js
+// 调出美股行情面板（Te 协议）
+functionBtnDo(113);
+// 加密币 / A股
+functionBtnDo(112);  // cryptoHolder
+functionBtnDo(114);  // chinaHolder
+// 或直接请求数据（不建面板，纯拿数据）
+socket.send("Te#");
+// 之后可读行情
+// Objs.stockHolder.Variable.coins["AAPL"]
+```
 
 ## 其他前缀命令族
 

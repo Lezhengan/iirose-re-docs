@@ -99,13 +99,13 @@ demandFunc(demandAgent.value);
 |---|---|---|---|
 | 商城 | `8` | `mdi-shopping` | 商城 `mallHolder` |
 | 银行 | `110` | `mdi-bank` | 银行 `bankHolder` |
-| 炒股 | `9` | `mdi-chart-areaspline` | 股票 `stockOldHolder` |
+| 炒股 | `9` | `mdi-chart-areaspline` | 股票 `stockOldHolder`（**默认可见的股票入口**，数据走 `*` 房间载荷，见[投资/行情](../websocket/commands.md)） |
 | 商店 | `10` | `mdi-store` | 商店 `shopHolder` |
 | 活动 | `11` | `mdi-briefcase` | 赚钱/活动 `makeMoneyHolder` |
 | 三方 | `111` | `mdi-wallet-giftcard` | 伴侣/三方 `partner` |
-| （加密币） | `112` | `mdi-bitcoin` | 加密币行情（`display:none` 隐藏） |
-| （股票） | `113` | `mdi-chart-box` | 股票行情（隐藏） |
-| （中华币） | `114` | `mdi-chart-line` | 中华币行情（隐藏） |
+| （加密币） | `112` | `mdi-bitcoin` | 加密币行情 `cryptoHolder`（`display:none` **隐藏占位**，空文案，用 `functionBtnDo(112)` 调出） |
+| （股票） | `113` | `mdi-chart-box` | 美股行情 `stockHolder`（`display:none` **隐藏占位**，空文案，用 `functionBtnDo(113)` 调出） |
+| （中华币） | `114` | `mdi-chart-line` | A股行情 `chinaHolder`（`display:none` **隐藏占位**，空文案，用 `functionBtnDo(114)` 调出） |
 
 ### 工具
 
