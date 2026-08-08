@@ -183,6 +183,36 @@ demandFunc(demandAgent.value);
 - 面板开关逻辑：`functionBtnDo(e)` messages.js L14436（完整编号表见[前端函数调用速查](../functions.md)）
 - 折叠分组：`functionBtnDo('*', this)`（L14439）
 
+## 图标（mdi 字体）来源
+
+侧边栏每个按钮的图标都是 **Material Design Icons（mdi）字体图标**，调用链如下：
+
+1. **HTML 静态 class**：按钮图标写在 `messages.html`（登录后加载），共 **68 个** `functionBtnIcon mdi-*`：
+
+```html
+<div class="functionButton" onclick="functionBtnDo(1,this);">
+  <span class="functionBtnIcon mdi-music-box-multiple"></span>
+  <span class="functionBtnFont">歌单</span>
+</div>
+```
+
+2. **字体 CSS 动态加载**：登录后 messages.js L2067 注入：
+
+```js
+Utils.getStyle(static + "lib/css/app/server/materialdesigniconsV7_4_47.css");
+```
+
+即 **mdi 7.4.47** 版（`@font-face` 定义 `font-family:md`，`.mdi-*::before` 渲染码点）。图标名 = class 名（`mdi-mailbox`、`mdi-forum`、`mdi-fire`…）。
+
+3. **CSS 覆盖自定义**：改 class 即可换图标，例如：
+
+```css
+/* 把"歌单"按钮图标换成另一个 mdi 图标（需先查该图标的 content 码点） */
+.functionButton[onclick="functionBtnDo(1,this);"] .functionBtnIcon { font-family: md; }
+```
+
+> 全量图标名清单见 [DOM 完整索引](dom-index.md) 的 mdi-* 图标全集。
+
 ---
 
 > ⚠️ **免责声明**：本节内容仅供**学习与逆向分析交流**。其中描述的自动化能力（消息拦截/hook、绕过前端过滤直接 `socket.send` 发送消息/弹幕/广播、自动发言与回复、批量抓取用户或接口数据、模拟点击与机器人化操作等）**可能不被平台允许**，实际使用可能导致账号封禁。请勿用于刷屏、轰炸、骚扰、爬取隐私或任何影响他人体验的用途，由此产生的一切后果由使用者自行承担。
