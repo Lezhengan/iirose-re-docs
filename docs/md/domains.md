@@ -61,6 +61,24 @@ a = isSocketHttp ? "ws://m" + e + ".iirose.com:80" : "wss://m" + e + ".iirose.co
 
 `parent.userLocation` 由外层 index.js 检测（L485-498，缓存于 localStorage `"userLocation"`，格式 `时间戳>地区码`，3 天有效），messages.js 读取 `parent.userLocation` 选节点。
 
+## beta 世界（测试服）
+
+> 由 `betaWorld` 标志启用的**测试服**。目前官方**可能已关闭**——当前逆向的这份源码里 `betaWorld` 在初始化时被硬编码为 `!1`（false，L9606），beta 分支不可达。
+
+与正式世界的差异（`betaWorld` 为真时生效）：
+
+| 项 | 正式世界 | beta 世界 |
+|---|---|---|
+| 节点队列 | `["1","8","9"]`（CN）/ `["8","9"]`（海外） | **`["0"]`**，只连 `wss://m0.iirose.com:443`，不追加 m8/m9（L15409/L13307） |
+| HTTP 接口 | 无后缀 | 部分接口追加 `?beta`（如 `socialAccGet.php?beta`，L21313/21361） |
+| 启动提示 | 无 | 弹 beta 提示 `languageArr[7][237][0]`（L16665） |
+| localStorage | 正常 key | 表情缓存带 `_beta` 后缀（`activeDisconnectionRestoreEmoji_beta`，L16490） |
+| 连接全失败 | 等 10 秒无限重试 | 弹 `betaWorldFaild` 通知（L16764）→ 清 `betaWorld` Cookie → **整页刷新退回正式世界**（L14025） |
+
+- 进入方式：`betaWorld` 标志（历史版本经 `betaWorld` Cookie 进入）
+- 退出机制：`removeCookie("betaWorld")` + `location._reload()` 回正式服
+- 其它差异点与正式版相同（登录包 `*`+JSON、`c` 心跳、`T` 行情等协议一致）
+
 断线重连：无心跳协议，断线直接 `location._reload()` 整页重连。
 
 ## 实测参考
