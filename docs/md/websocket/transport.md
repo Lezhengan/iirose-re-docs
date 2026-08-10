@@ -5,11 +5,14 @@
 ```
 wss://m1.iirose.com:443   中国大陆（主）
 wss://m8.iirose.com:443   海外/非 CN（主），国内备用
-wss://m9.iirose.com:443   防 DDoS 兜底节点
+wss://m9.iirose.com:443   防 DDoS 兜底节点（Fallback.socketIpAntiDDOS）
 （beta 世界为 m0）
 ```
 
-- 节点由 `Fallback.socketIpArr` + 地域检测生成队列（详见[域名与节点](../domains.md)），顺序随机化，失败自动切换下一个
+- 节点由 `Fallback.socketIpArr` + 地域检测生成队列（详见[域名与节点](../domains.md)）：`SocketInit` 时复制列表并随机打乱，国内用户（CN/未知）追加 `m8`，**末尾永远追加 `m9` 防 DDoS 节点兜底**（L13306-13307）
+- 连接地址 `wss://m{号}.iirose.com:443`（`isSocketHttp` 时走 `ws://…:80` 明文）
+- 每次连接 `shift()` 弹出一个节点，**失败自动换下一个**；全部用尽后等 **10 秒**再从头重试（L14025）
+- 特殊分支：国内用户在 m1 首次加载 6~100 秒内失败 → `Fallback.socketIpArr.pop()` 弹掉末尾兜底节点，避免再撞防 DDoS 节点（L14016-14023）
 - **认证不靠 Cookie**：握手头无 Cookie，服务器通过 TLS ClientHello 指纹（JA3）识别真实浏览器/Electron 客户端；Node 原生 TLS 连接返回 101 但被静默丢弃（不发任何数据）
 
 ## 进入房间
@@ -42,7 +45,9 @@ for (msg of data) if (msg) socket.__onmessage(msg);
 ## 断线重连
 
 - **应用层心跳**：服务端不发 WebSocket 层 ping/pong，但会推送应用层 `c` 消息；客户端收到后通过 `patchedSetInterval` 每 2 秒回发一次 `socket.send("c")` 保活（L13687-13690）
-- 断线后调用 `location._reload()` **整页刷新**重新连接（不是透明重连）
+- **断线**（`socket.onclose`）→ `location._reload()` **整页刷新**重新连接（不是透明重连）
+- **连接失败**（`socket.onerror`）→ `socketRetry()` 删掉旧 socket 重建（L4424-4426），即换下一个节点重连——**无限重试，无重试次数上限**
+- **被限流的表现**：服务端若对来源 IP 做了临时限制，前端**没有任何业务提示**（无"IP 被封"字样），只会表现为"连不上 → 换节点无限重试"（详见 [http-api.md 登录限流](../http-api.md#登录错误码--请求限流)）
 - 掉线消息在本地以"离线私聊"形式缓存
 
 ## 双向流量特征
