@@ -9,7 +9,12 @@ wss://m9.iirose.com:443   防 DDoS 兜底节点（Fallback.socketIpAntiDDOS）
 （beta 世界为 m0）
 ```
 
-- 节点由 `Fallback.socketIpArr` + 地域检测生成队列（详见[域名与节点](../domains.md)）：`SocketInit` 时复制列表并随机打乱，国内用户（CN/未知）追加 `m8`，**末尾永远追加 `m9` 防 DDoS 节点兜底**（L13306-13307）
+- 节点队列生成（**精确逻辑**，L2065 + L13306-13307）：
+  1. 启动时（L2065）：CN 用户 `push("1")`，非 CN `push("8")` 到 `Fallback.socketIpArr`
+  2. `SocketInit`：复制列表，多于 1 个则随机打乱
+  3. 非 beta 世界：**CN 用户再追加 `m8`**（非 CN 不重复加），最后**永远追加 `m9` 防 DDoS 兜底**
+  4. 最终队列：CN = `["1","8","9"]`，非 CN = `["8","9"]`，beta = `["0"]`
+- **m0 / m2 真实存在但官方前端未使用**：`Fallback.socketIpArr` 默认 `[]`，当前前端代码不 push `0`/`2`；第三方 bot（iirosebot）的轮换表 `[0,1,2,None,8]` 会连 `m0`/`m1`/`m2`/`m8`/`m.iirose.com`，说明服务端有更多节点
 - 连接地址 `wss://m{号}.iirose.com:443`（`isSocketHttp` 时走 `ws://…:80` 明文）
 - 每次连接 `shift()` 弹出一个节点，**失败自动换下一个**；全部用尽后等 **10 秒**再从头重试（L14025）
 - 特殊分支：国内用户在 m1 首次加载 6~100 秒内失败 → `Fallback.socketIpArr.pop()` 弹掉末尾兜底节点，避免再撞防 DDoS 节点（L14016-14023）
