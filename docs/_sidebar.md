@@ -21,6 +21,7 @@
       * [侧边栏 DOM](md/frontend/sidebar.md)
       * [按钮内部行为](md/frontend/sidebar-actions.md)
     * [用户名片](md/frontend/profile-card.md)
+    * [个人资料编辑](md/frontend/user-info.md)
     * [花园卡片 DOM](md/frontend/cards.md)
     * [弹窗系统](md/frontend/dialogs.md)
     * [面板系统](md/features/panels.md)
