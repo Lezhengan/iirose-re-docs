@@ -32,8 +32,9 @@
       plugins: [
         function (hook) {
           // 全站页尾免责声明：逆向不保证完全正确
-          hook.afterEach(function (html) {
-            return html +
+          // 用 beforeEach（渲染前注入），否则追加的 Markdown 不会被渲染成格式
+          hook.beforeEach(function (content) {
+            return content +
               '\n\n---\n\n' +
               '> ⚠️ **免责声明**：本文档为**逆向分析**产物，文中协议、字段、源码行号等**不保证完全正确**，' +
               '可能与线上实际行为存在出入，请以实测为准。仅供学习交流，违规使用可能导致账号封禁。';
