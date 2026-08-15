@@ -90,7 +90,7 @@ socket.send("*" + JSON.stringify({
   mu: "01",            // 流量模式（关系到媒体播放，adapter 固定 "01"）
   rp: "房间密码",        // 密码房
   lr: "旧房间id",        // 切房后认证（iirosebot 带）
-  fp: "@" + md5(用户名), // 指纹（Cookie fp 存在则沿用；iirosebot / adapter 用 "@" + md5(用户名)）
+  fp: "@" + md5(用户名), // 指纹：adapter / iirosebot 用 "@" + md5(用户名)；官方前端用 "@" + 32 位随机串（见 commands.md）
   nt: "", vc: 0, ev: 0,  // 通知偏好 / 音效 / 环境音
   ros/roi/ron: …         // 角色扮演房：角色性别/头像/名字
 }))

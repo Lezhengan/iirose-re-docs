@@ -1,6 +1,6 @@
 # WebSocket 发送命令
 
-> 客户端 → 服务器。所有命令为**明文文本**，首字符为协议前缀（部分为 JSON）。`socket.send(...)` 直接调用。
+> 客户端 → 服务器。所有命令的**业务载荷为明文文本**，首字符为协议前缀（部分为 JSON）。`socket.send(...)` 直接调用。注意：底层 WebSocket 帧采用**二进制封装**（`binaryType='arraybuffer'`），> 256 字节的载荷会 gzip 压缩并加首字节 `0x01` 标记（详见 [transport.md](transport.md#帧编码)），但这里列出的命令均为**压缩前**的明文格式。
 >
 > 面向第三方机器人的**精简命令速查**见 [third-party.md](third-party.md)（含 adapter-iirose 交叉验证、连接地址、登录包、心跳与完整接收解析）。
 
@@ -29,7 +29,7 @@
 
 | 命令 | 功能 |
 |---|---|
-| `*{JSON}` | **进入房间**（`fetchroom`，L23733）：`socket.send("*" + JSON.stringify(s))`。字段：`r`=房间id、`n`=昵称、`p`=密码、`st`=状态、`mo`=心情、`mb/mu/rp/nt`=杂项、`ros/roi/ron`=角色扮演（可选）、`fp`=指纹（`@`+32位随机串）；登录态另带 `lr`=上次房间、`i`=头像、`nc`=名字颜色、`s`=性别、`uid`、`li`=loginid、`la`=语言 |
+| `*{JSON}` | **进入房间**（`fetchroom`，L23733）：`socket.send("*" + JSON.stringify(s))`。字段：`r`=房间id、`n`=昵称、`p`=密码、`st`=状态、`mo`=心情、`mb/mu/rp/nt`=杂项、`ros/roi/ron`=角色扮演（可选）、`fp`=指纹（**官方前端用 `@` + 32 位随机串**；第三方 bot 如 adapter 用 `@` + md5(用户名)）；登录态另带 `lr`=上次房间、`i`=头像、`nc`=名字颜色、`s`=性别、`uid`、`li`=loginid、`la`=语言 |
 | `m房间id` | **切换房间**（登录后，L23620 `socket.send("m" + t ...)`，密码房 `m房间id>密码`） |
 
 > `%房间id` 不是进房命令——`%` 前缀是**服务器推送**房间数据（接收路由，见 [接收路由](messages.md)）；发送 `%` 仅用于请求媒体列表（`@` 快捷命令，L2874）。
@@ -465,7 +465,7 @@ socket.send("*" + JSON.stringify({
   n: "昵称",
   p: "密码",
   st: "状态",
-  fp: "@" + "32位随机字符串"
+  fp: "@" + "32位随机字符串或md5(用户名)"
 }));
 
 // 登录后切房

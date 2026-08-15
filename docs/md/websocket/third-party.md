@@ -4,7 +4,7 @@
 
 ## 核心结论
 
-1. **所有功能请求都走 WS**：聊天、私聊、广播、切房、进房认证、股票、银行、商店、论坛、任务、朋友圈、排行榜、点歌、点播、关注/点赞/打分/转账、房主管理、媒体管理——**没有任何一个功能需要走 HTTP 才能完成请求**（HTTP 仅用于「图片/文件上传」等静态资源与登录前的验证码）。
+1. **房间内主要业务命令走 WS**：聊天、私聊、广播、切房、进房认证、股票、银行、商店、论坛、任务、朋友圈、排行榜、点歌、点播、关注/点赞/打分/转账、房主管理、媒体管理——这些**房间内交互功能全部通过 WS 完成**。但媒体解析（网易云/QQ音乐/B站等链接解析）、翻译、支付、图片/文件上传、用户名搜索等**辅助功能走 HTTP**（详见 [http-api.md](../http-api.md)）。
 2. **实际可用地址**：第三方机器人用 `wss://{m1|m2|m8|m9|m}.iirose.com:8778`；官方网页端用 `wss://m{1,8,9}.iirose.com:443`（`isSocketHttp` 时为 `ws://…:80`）。
 3. **免 HTTP 直连**：登录信息全部放在登录包 `*`+JSON 里（用户名 + 密码 MD5），**不需要先调 HTTP 登录接口拿 uid**，即可完成认证进房。
 
@@ -65,15 +65,17 @@ if (uintArray.length > 256) {
 
 ```ts
 const array = new Uint8Array(event.data);
-let message;
+let raw;
 if (array[0] === 1) {
-  message = zlib.unzipSync(array.slice(1)).toString();  // 首字节 1 → gzip
+  raw = zlib.unzipSync(array.slice(1)).toString();  // 首字节 1 → gzip
 } else {
-  message = Buffer.from(array).toString('utf8');        // 明文
+  raw = Buffer.from(array).toString('utf8');        // 明文
 }
+// 解压后按 \0 分割为单条消息（与 transport.md 一致）
+const messages = raw.split('\0').filter(m => m.length > 0);
 ```
 
-> 官方前端用 pako 同逻辑（首字节 `0x01` 判定，见 [transport.md](transport.md#帧编码)），语义一致。
+> 官方前端用 pako 同逻辑（首字节 `0x01` 判定，见 [transport.md](transport.md#帧编码)），语义一致。一帧可能包含多条消息，用 `\0` 分隔。adapter 的 `message.ts` 未显式 split `\0`（实际由服务端逐帧保证），但为安全起见第三方实现应加上此步骤。
 
 ## 3. 登录包（`*` + JSON）
 
@@ -96,7 +98,7 @@ socket.send('*' + JSON.stringify(loginObj));
 | `mu` | 流量模式 | **`"01"`**（关系到媒体播放） |
 | `lr` | 旧房间 id | 切房后重连认证用，可省略 |
 | `rp` | 房间密码 | 密码房才填 |
-| `fp` | 指纹 | **`"@" + md5(用户名)`** |
+| `fp` | 指纹 | **adapter 用 `"@" + md5(用户名)`**；官方前端用 `"@" + 32 位随机串（见 [commands.md](commands.md#进房--切房)） |
 
 ### 密码 MD5 判定（`password.ts`）
 
@@ -158,7 +160,9 @@ function getMd5Password(password) {
 - 心跳失败（`readyState` 非 OPEN）：触发 `onConnectionLoss` 重连。
 - 登录超时（默认 60s 未收到 `%` 首包）：判定登录失败。
 
-## 5. 发送命令速查（全部为 `socket.send(str)` 明文）
+## 5. 发送命令速查（业务载荷为明文文本，底层帧自动 gzip 封装）
+
+> 下面列出的命令是**压缩前的明文文本**（即 `IIROSE_WSsend(bot, str)` 的 `str` 参数）。底层 `send.ts` 会自动将 > 256 字节的载荷 gzip 压缩并封装为二进制帧（首字节 `0x01`），详见第 2 节。
 
 ### 5.1 消息
 
@@ -376,13 +380,18 @@ ws.on('open', () => {
 
 ws.on('message', (data) => {
   const arr = new Uint8Array(data);
-  let msg;
-  if (arr[0] === 1) msg = zlib.unzipSync(arr.slice(1)).toString();
-  else msg = Buffer.from(arr).toString('utf8');
-  console.log('[recv]', msg);
+  let raw;
+  if (arr[0] === 1) raw = zlib.unzipSync(arr.slice(1)).toString();
+  else raw = Buffer.from(arr).toString('utf8');
 
-  if (msg.startsWith('%')) {
-    console.log('登录成功，可开始发送命令');
+  // 一帧可能包含多条消息，用 \0 分隔
+  const messages = raw.split('\0').filter(m => m.length > 0);
+  for (const msg of messages) {
+    console.log('[recv]', msg);
+
+    if (msg.startsWith('%')) {
+      console.log('登录成功，可开始发送命令');
+    }
   }
 });
 

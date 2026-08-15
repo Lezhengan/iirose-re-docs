@@ -55,7 +55,7 @@ roomArr = [
 ```js
 // 进入房间：socket.send("*" + JSON.stringify(s))（fetchroom，L23733）
 // s 字段：r=房间id、n=昵称、p=密码、st=状态、mo=心情、fp=指纹等
-socket.send("*" + JSON.stringify({ r: "房间id", n: "昵称", st: "状态", fp: "@" + "随机32位" }));
+socket.send("*" + JSON.stringify({ r: "房间id", n: "昵称", st: "状态", fp: "@" + "随机32位或md5(用户名)" }));
 
 // 登录后切房（含密码房：m房间id>密码）
 socket.send("m房间id");
