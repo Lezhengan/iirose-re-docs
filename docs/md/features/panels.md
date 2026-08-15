@@ -7,7 +7,7 @@
 | 面板 | 编号 | 功能 |
 |---|---|---|
 | `mapHolder` | — | 地图 / 房间列表（核心） |
-| `roomSplashHolder` | 18 | 热推房间封面（见[热推房间](hot-rooms.md)） |
+| `roomSplashHolder` | 18 | 热推房间封面（见[热推房间](md/features/hot-rooms.md)） |
 | `sessionHolder` | — | 会话管理 |
 | `mediaManager` | — | 媒体播放管理 |
 | `pmHelper` | — | 私聊辅助 |

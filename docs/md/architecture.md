@@ -32,7 +32,7 @@ index.html（引导壳）
 ## 启动流程（messages.html）
 
 1. `Init.beforeShowBf` 初始化本地状态（`Utils.database` 读取 localStorage）
-2. 建立 WebSocket（节点选择见[域名与节点](domains.md)）
+2. 建立 WebSocket（节点选择见[域名与节点](md/domains.md)）
 3. 登录态校验：`localStorage.cookie` 存在则直接进房，否则弹登录框
 4. 进房：`socket.send("%房间id")`
 5. `Probe.init` 按需初始化面板：worker / mapHolder / sessionHolder / homeHolder / userIcon / markdown / emojiJs / imgClip 等

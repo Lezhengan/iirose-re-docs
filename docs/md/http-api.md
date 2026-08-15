@@ -2,7 +2,7 @@
 
 > 均为 GET/POST 明文请求，返回 JSON 字符串或原始文本。**域名按业务拆分**（index.js L114-141）：`a.iirose.com`=API、`b.iirose.com`=业务、`f.iirose.com`=上传、`r.iirose.com`=回显前缀、`z.iirose.com`=辅助(helper)、`w.iirose.com`=代理(agent)、`d.iirose.com`=盾/支付(shield)、`s.iirose.com`=静态、`mx.iirose.com`=地域检测。各章节标题已标注完整基础 URL，直接拼接接口名即可。
 
-> ⚠️ **股票/加密币/A股行情没有 HTTP 接口**：数据全部走 WS（`Te`/`Tk`/`Ta` 前缀，`socket.send("Te#")` 请求），HTTP 仅有静态 logo 资源（`images/invest/*/icon.json` 与 `.png`）。注意这三个行情面板对应侧边栏**隐藏占位按钮**（`functionBtnDo(112/113/114)`，`display:none`），默认可见的"炒股"按钮（`functionBtnDo(9)`）打开的是旧版 `stockOldHolder` 面板。完整协议见 [投资/行情（WS）](websocket/commands.md#投资行情t-前缀)。
+> ⚠️ **股票/加密币/A股行情没有 HTTP 接口**：数据全部走 WS（`Te`/`Tk`/`Ta` 前缀，`socket.send("Te#")` 请求），HTTP 仅有静态 logo 资源（`images/invest/*/icon.json` 与 `.png`）。注意这三个行情面板对应侧边栏**隐藏占位按钮**（`functionBtnDo(112/113/114)`，`display:none`），默认可见的"炒股"按钮（`functionBtnDo(9)`）打开的是旧版 `stockOldHolder` 面板。完整协议见 [投资/行情（WS）](md/websocket/commands?id=投资行情t-前缀)。
 
 ## 登录/账号（`https://a.iirose.com/lib/php/system/`）
 
@@ -36,7 +36,7 @@
 
 ## 媒体解析（`https://a.iirose.com/lib/php/api/`）
 
-> 解析输入"链接"（URL 或分享文本），返回可播放的媒体信息，客户端拼装为 `<> url"名字"封面"作者` 消息格式发送到房间（见 [点播/共享媒体](websocket/commands.md)）。
+> 解析输入"链接"（URL 或分享文本），返回可播放的媒体信息，客户端拼装为 `<> url"名字"封面"作者` 消息格式发送到房间（见 [点播/共享媒体](md/websocket/commands.md)）。
 > 触发入口是 `Utils.service.moveinputDo("<> 链接")`（L2948-3263 的分发器）。**部分平台不走 API，直接拼 WS 命令**（下表"方式"列）。
 
 | 接口 | 参数 | 平台 | 触发链接特征 | 返回处理 |

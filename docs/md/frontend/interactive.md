@@ -1,7 +1,7 @@
 # 可交互 DOM 全解
 
 > 「用户可以操作到的 DOM」完整清单：所有能**点击**、**输入**、**拖动**、**拖放文件**的元素，以及每个元素的自定义 JS 操作方式。
-> 本文是[操作 DOM / JS 自定义](operations.md)的**完整索引**；operations.md 只列了核心 8 项，这里按类别给全。
+> 本文是[操作 DOM / JS 自定义](md/frontend/operations.md)的**完整索引**；operations.md 只列了核心 8 项，这里按类别给全。
 > 逆向依据：`messages.html` 内联事件 + `reference/src/messages.js` 事件绑定。
 
 ## 一、输入类（键盘 / 文本）
@@ -54,7 +54,7 @@
 
 | DOM | 交互行为 | 自定义操作 | 源码 |
 |---|---|---|---|
-| `.functionButton` ×70 | 侧边栏全部按钮，`onclick=functionBtnDo(编号)` | `functionBtnDo(编号)`（表见[侧边栏](sidebar.md)） | messages.html |
+| `.functionButton` ×70 | 侧边栏全部按钮，`onclick=functionBtnDo(编号)` | `functionBtnDo(编号)`（表见[侧边栏](md/frontend/sidebar.md)） | messages.html |
 | `.functionHolderInfo`（含 `#functionHolderInfoIcon` / `#functionHolderInfoName`） | 点头像/昵称 → `functionBtnDo(0)+getProfile(...)` **打开自己的名片** | `getProfile([myself2,namecolor,avatar,sex,uid])` | messages.html |
 | `#moodShower` | 心情文本 | 直接改 `.textContent` | — |
 | `#userREBtn` | "账号设置"按钮文字 | 改文字（CSS 定制用） | — |

@@ -15,7 +15,7 @@
 | `#videoPlayer`（全局 `videoPlayer`） | 共享视频播放器 | `videoPlayer[0].play()/pause()`、`currentTime`、`src` |
 | `#radioPlayer`（全局 `radioPlayer`） | 电台播放器 | 同上 |
 | `#volumecontrol` | 音量滑块 | 拖动/赋值控制音量 |
-| 侧边栏按钮 | 全部面板入口 | `functionBtnDo(编号)`（表见[侧边栏](sidebar.md)） |
+| 侧边栏按钮 | 全部面板入口 | `functionBtnDo(编号)`（表见[侧边栏](md/frontend/sidebar.md)） |
 
 ## 二、消息收发 hook 点
 

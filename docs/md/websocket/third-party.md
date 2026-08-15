@@ -75,7 +75,7 @@ if (array[0] === 1) {
 const messages = raw.split('\0').filter(m => m.length > 0);
 ```
 
-> 官方前端用 pako 同逻辑（首字节 `0x01` 判定，见 [transport.md](transport.md#帧编码)），语义一致。一帧可能包含多条消息，用 `\0` 分隔。adapter 的 `message.ts` 未显式 split `\0`（实际由服务端逐帧保证），但为安全起见第三方实现应加上此步骤。
+> 官方前端用 pako 同逻辑（首字节 `0x01` 判定，见 [transport.md](md/websocket/transport?id=帧编码)），语义一致。一帧可能包含多条消息，用 `\0` 分隔。adapter 的 `message.ts` 未显式 split `\0`（实际由服务端逐帧保证），但为安全起见第三方实现应加上此步骤。
 
 ## 3. 登录包（`*` + JSON）
 
@@ -98,7 +98,7 @@ socket.send('*' + JSON.stringify(loginObj));
 | `mu` | 流量模式 | **`"01"`**（关系到媒体播放） |
 | `lr` | 旧房间 id | 切房后重连认证用，可省略 |
 | `rp` | 房间密码 | 密码房才填 |
-| `fp` | 指纹 | **adapter 用 `"@" + md5(用户名)`**；官方前端用 `"@" + 32 位随机串（见 [commands.md](commands.md#进房--切房)） |
+| `fp` | 指纹 | **adapter 用 `"@" + md5(用户名)`**；官方前端用 `"@" + 32 位随机串（见 [commands.md](md/websocket/commands?id=进房--切房)） |
 
 ### 密码 MD5 判定（`password.ts`）
 
@@ -227,7 +227,7 @@ function getMd5Password(password) {
 | `$1` | 查询自身账号信息 |
 | `$2{JSON}` | 更新自身资料（`{surname,name,birthday,tag,hobby,residence,website,family}`） |
 | `$3+新用户名` | 修改用户名 |
-| `+-username` | 按用户名查用户资料（adapter；**官方前端为 `=-+` + 小写用户名**，见 [commands.md](commands.md) 用户搜索差异） |
+| `+-username` | 按用户名查用户资料（adapter；**官方前端为 `=-+` + 小写用户名**，见 [commands.md](md/websocket/commands.md) 用户搜索差异） |
 | `+#0uid` / `+#1uid` | 关注 / 取关 |
 | `+^uid` | 关注 + 粉丝列表 |
 | `+*uid [备注]` | 点赞 |

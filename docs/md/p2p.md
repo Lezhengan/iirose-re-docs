@@ -62,7 +62,7 @@ iceStun  (静态 STUN 列表)
 
 ## 四、通话（media）
 
-通话面板引擎 `mediaChat`（见[面板系统](features/panels.md)），核心状态在 `engine.V`：`video`（开摄像头）、`scrOn`（开屏幕共享）、`sysOn`。
+通话面板引擎 `mediaChat`（见[面板系统](md/features/panels.md)），核心状态在 `engine.V`：`video`（开摄像头）、`scrOn`（开屏幕共享）、`sysOn`。
 
 | 能力 | 实现 | 源码 |
 |---|---|---|
@@ -100,4 +100,4 @@ iceStun  (静态 STUN 列表)
 | `p=` | 客户端 → 服务器 | 请求 TURN 凭证 |
 | `p` 前缀响应 | 服务器 → 客户端 | TURN JSON（`{s,u,p,t}`） |
 
-> 通话邀请/挂断/信令握手本身走 WS 的 `f` 系命令（见[发送命令](websocket/commands.md)），媒体流才走 WebRTC。
+> 通话邀请/挂断/信令握手本身走 WS 的 `f` 系命令（见[发送命令](md/websocket/commands.md)），媒体流才走 WebRTC。

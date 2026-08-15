@@ -154,7 +154,7 @@ if (u) console.log(u);
 
 ## 四、热推房间算法：`Utils.service.jumpToMaxPplRoom(n)`
 
-核心算法（L3653），见[热推房间](features/hot-rooms.md)。`n=1` 返回排序后的房间列表，`n=0` 或省略则自动跳房。
+核心算法（L3653），见[热推房间](md/features/hot-rooms.md)。`n=1` 返回排序后的房间列表，`n=0` 或省略则自动跳房。
 
 ```js
 // 1. 拿到当前最热的房间列表（纯本地计算，房间id数组）
@@ -176,7 +176,7 @@ hot.slice(0, 5).forEach(function (x) {
 
 ## 五、消息发送（绕过 UI 直接 `socket.send`）
 
-所有命令为明文文本（见 [WS 发送命令](websocket/commands.md)），`socket` 是全局 WebSocket 对象。
+所有命令为明文文本（见 [WS 发送命令](md/websocket/commands.md)），`socket` 是全局 WebSocket 对象。
 
 ```js
 // 群聊消息（JSON，m=内容，mc=颜色，i=消息唯一id）
@@ -213,7 +213,7 @@ socket.send("f@" + "目标uid");
 | `Objs.mapHolder.Assets.roomJson` | 房间id → 房间详情 |
 | `Utils.database("roomHistory")` | 本地浏览历史（逗号分隔房间id，最多 8 条，见[七](#七设置与本地数据)） |
 | `Utils.settings(key, value)` | 设置项读写（localStorage，见[七](#七设置与本地数据)） |
-| `Utils.sync(0, 文本, 回调)` | 确认弹窗（详见[弹窗与通知](frontend/dialogs.md)） |
+| `Utils.sync(0, 文本, 回调)` | 确认弹窗（详见[弹窗与通知](md/frontend/dialogs.md)） |
 | `Cookie(key, value)` | cookie 读写 |
 
 ```js
@@ -228,7 +228,7 @@ Utils.sync(0, "确认要这样做吗？", function (ok) {
 
 ### 颜色工具（卡片主题色 / RGB↔hex）
 
-媒体卡片主题色处理的一组工具（详见[卡片 DOM](frontend/cards.md#歌曲卡片主题色函数)）：
+媒体卡片主题色处理的一组工具（详见[卡片 DOM](md/frontend/cards.md#歌曲卡片主题色函数)）：
 
 | 函数 | 行号 | 作用 |
 |---|---|---|

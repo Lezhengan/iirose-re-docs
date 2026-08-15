@@ -17,7 +17,7 @@
 │  │  └─ #panelHolder         ← 动态面板挂载点（面板切换动画）
 │  ├─ #hidePanel              ← 隐藏面板容器
 │  ├─ #functionHolderDarker   ← 侧边栏遮罩
-│  └─ #functionHolder         ← 侧边栏（见[侧边栏](sidebar.md)）
+│  └─ #functionHolder         ← 侧边栏（见[侧边栏](md/frontend/sidebar.md)）
 ├─ #bodyBG                    ← 背景图/视频
 └─ #resourceHolder            ← 资源加载容器
 ```
@@ -71,7 +71,7 @@
 | `#sessionHolder` | 会话管理容器 |
 | `#movePanelHolder` / `#functionPanelHolder` | 移动面板/功能面板切换容器 |
 
-## 侧边栏按钮（见[侧边栏](sidebar.md)）
+## 侧边栏按钮（见[侧边栏](md/frontend/sidebar.md)）
 
 `#functionHolder`、`#functionHolderDarker`、`#functionHolderImg`、`#functionHolderInfoIcon`、`#functionHolderInfoName`、`#moodShower`、`#userREBtn`、`#demandAgent`、`#functionHolderDvider`、`#timeHolder`、`#functionHolderExtBox`、`#extSubscribeHolder`、`#extContactsHolder`、`#extPmHolder`
 

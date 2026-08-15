@@ -1,7 +1,7 @@
 # 侧边栏按钮内部行为（functionBtnDo 全解）
 
 > 侧边栏所有按钮统一走全局函数 `functionBtnDo(编号, 按钮, 参数)`（L14436），本文给出每个编号点击后的**实际内部执行**（源码行号基于 `reference/src/messages.js`）。
-> 对应面板的 DOM 结构见[侧边栏](sidebar.md)与[面板系统](md/features/panels.md)；编号与 @命令速查见[前端函数调用速查](md/functions.md)。
+> 对应面板的 DOM 结构见[侧边栏](md/frontend/sidebar.md)与[面板系统](md/features/panels.md)；编号与 @命令速查见[前端函数调用速查](md/functions.md)。
 
 ## 通用流程（L14437-14445）
 

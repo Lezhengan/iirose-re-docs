@@ -75,7 +75,7 @@ demandFunc(demandAgent.value);
 
 ## 分组按钮速查
 
-> 各按钮点击后的**实际内部行为**（源码逐编号解析）见[按钮内部行为](sidebar-actions.md)。
+> 各按钮点击后的**实际内部行为**（源码逐编号解析）见[按钮内部行为](md/frontend/sidebar-actions.md)。
 
 所有按钮格式：`functionButton` 含 `functionBtnIcon`（Material Design Icons 类）+ `functionBtnFont`（按钮名）。
 
@@ -211,7 +211,7 @@ Utils.getStyle(static + "lib/css/app/server/materialdesigniconsV7_4_47.css");
 .functionButton[onclick="functionBtnDo(1,this);"] .functionBtnIcon { font-family: md; }
 ```
 
-> 全量图标名清单见 [DOM 完整索引](dom-index.md) 的 mdi-* 图标全集。
+> 全量图标名清单见 [DOM 完整索引](md/frontend/dom-index.md) 的 mdi-* 图标全集。
 
 ---
 

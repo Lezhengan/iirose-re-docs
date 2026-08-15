@@ -1,6 +1,6 @@
 # DOM 完整索引
 
-> 从 `messages.html`（1.6MB）全量爬取的结果。本文是[DOM 结构](dom.md)的**补全索引**：dom.md 按功能讲主要元素，这里给全部静态 id 与 class 统计。
+> 从 `messages.html`（1.6MB）全量爬取的结果。本文是[DOM 结构](md/frontend/dom.md)的**补全索引**：dom.md 按功能讲主要元素，这里给全部静态 id 与 class 统计。
 > 提取工具：[extract_all_dom.js](../../../web_re/extract_all_dom.js)（`node extract_all_dom.js messages.html --ids / --classes`）。
 > 原始清单：[all_ids.txt](../../reference/all_ids.txt) / [all_classes.txt](../../reference/all_classes.txt)。
 
@@ -65,7 +65,7 @@
 
 **侧边栏（functionHolder 全系列）**
 
-见[侧边栏](sidebar.md)。静态完整清单：`#functionHolder`、`#functionHolderDarker`、`#functionHolderImg`、`#functionHolderInfoIcon`、`#functionHolderInfoName`（textOverflowEllipsis）、`#moodShower`、`#userREBtn`（span.functionBtnFont）、`#demandAgent`（input.functionBtnFont）、`#functionHolderDvider`（div.divider）、`#timeHolder`（span.functionBtnFont）、`#functionHolderExtBox` / `#extSubscribeHolder` / `#extContactsHolder` / `#extPmHolder`（div.functionItemBox）
+见[侧边栏](md/frontend/sidebar.md)。静态完整清单：`#functionHolder`、`#functionHolderDarker`、`#functionHolderImg`、`#functionHolderInfoIcon`、`#functionHolderInfoName`（textOverflowEllipsis）、`#moodShower`、`#userREBtn`（span.functionBtnFont）、`#demandAgent`（input.functionBtnFont）、`#functionHolderDvider`（div.divider）、`#timeHolder`（span.functionBtnFont）、`#functionHolderExtBox` / `#extSubscribeHolder` / `#extContactsHolder` / `#extPmHolder`（div.functionItemBox）
 
 音量/开关按钮：`#functionBtnVolume`、`#volumeMuteBtn`（span.functionBtnIcon）、`#volumeBox`、`#volumeprogress`、`#volumequantity`、`#volumecontrol`、`#emptyMediaPlayerBtn`、`#wallpaperLoadingBtn`、`#sleepModeBtn`、`#wallpaperVideoSwitchBtn`、`#bgMoveBtn`、`#lyricBtn`、`#systemVolumeBtn`、`#wallpaperBlurBtn`、`#bgBrightnessBtn`、`#danmakuModeBtn`、`#baseWallpaperBtn`（均为 span.functionBtnFont）
 
