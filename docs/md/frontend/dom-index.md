@@ -1,8 +1,8 @@
 # DOM 完整索引
 
 > 从 `messages.html`（1.6MB）全量爬取的结果。本文是[DOM 结构](md/frontend/dom.md)的**补全索引**：dom.md 按功能讲主要元素，这里给全部静态 id 与 class 统计。
-> 提取工具：[extract_all_dom.js](../../../web_re/extract_all_dom.js)（`node extract_all_dom.js messages.html --ids / --classes`）。
-> 原始清单：[all_ids.txt](../../reference/all_ids.txt) / [all_classes.txt](../../reference/all_classes.txt)。
+> 提取工具：`extract_all_dom.js`（`node extract_all_dom.js messages.html --ids / --classes`）。
+> 原始清单：`all_ids.txt` / `all_classes.txt`。
 
 ## 一、全部静态 id（101 个真实 id）
 
