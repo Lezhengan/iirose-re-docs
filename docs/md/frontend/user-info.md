@@ -36,7 +36,7 @@ socket.send("$2" + JSON.stringify(n));  // 保存修改（已注册账号）
 socket.send(JSON.stringify(n));         // 注册 / 游客建档（无密码账号）
 ```
 
-> 与[登录认证](../auth.md)的关系：保存包结构与登录包同源（用户名+密码+资料字段），注册成功后服务端把账号信息直接写入 Cookie 并刷新。
+> 与[登录认证](md/auth.md)的关系：保存包结构与登录包同源（用户名+密码+资料字段），注册成功后服务端把账号信息直接写入 Cookie 并刷新。
 
 ## `$1` 回包字段（`"` 分隔，server case 2，L21645-21741）
 
@@ -160,7 +160,7 @@ socket.send(JSON.stringify(n));         // 注册 / 游客建档（无密码账�
 | 8 | 系统图标（7 类：男女/情侣/热门/风景/卡通/动漫） |
 | 9 | QQ 绑定（`graph.qq.com` OAuth → `socialAccGet.php` 轮询 → `$4` 发送） |
 
-账号命令（`$` 前缀）完整列表见[发送命令](../websocket/commands.md#系统--认证-前缀用户设置面板-userreholder)。
+账号命令（`$` 前缀）完整列表见[发送命令](md/websocket/commands?id=系统--认证-前缀用户设置面板-userreholder)。
 
 ## 脚本示例
 

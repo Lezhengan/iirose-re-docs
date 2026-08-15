@@ -129,4 +129,4 @@ Probe.init.demandHolder || Init.fullPanel(510);   // 按需构建
 panelAnimate(510, 1);                             // 动画显示
 ```
 
-相关：见[面板系统](../features/panels.md)、[前端函数调用速查](../functions.md)。
+相关：见[面板系统](md/features/panels.md)、[前端函数调用速查](md/functions.md)。

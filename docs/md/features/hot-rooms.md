@@ -62,7 +62,7 @@
 
 ### 二级菜单（#selectHolder）
 
-菜单 = `Utils.buildSelect2(this, mapSelectJSON[y], 回调)`（L22746，通用菜单机制见[弹窗与通知](../frontend/dialogs.md)）。头部先渲染**房间信息卡**（封面、房间名、锁、地区、在线人数「人在」、房管数、简介，`Mod.template(25/24)` + 在线用户列表 `mod(4, rid)`），其后是菜单项（`mapSelectJSON` L23883-23891，均为 `.selectHolderBoxItem`）：
+菜单 = `Utils.buildSelect2(this, mapSelectJSON[y], 回调)`（L22746，通用菜单机制见[弹窗与通知](md/frontend/dialogs.md)）。头部先渲染**房间信息卡**（封面、房间名、锁、地区、在线人数「人在」、房管数、简介，`Mod.template(25/24)` + 在线用户列表 `mod(4, rid)`），其后是菜单项（`mapSelectJSON` L23883-23891，均为 `.selectHolderBoxItem`）：
 
 | 项 | 图标 | 动作 | 回调（L22747-22764） |
 |---|---|---|---|

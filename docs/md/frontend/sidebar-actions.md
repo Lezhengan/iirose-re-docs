@@ -1,7 +1,7 @@
 # 侧边栏按钮内部行为（functionBtnDo 全解）
 
 > 侧边栏所有按钮统一走全局函数 `functionBtnDo(编号, 按钮, 参数)`（L14436），本文给出每个编号点击后的**实际内部执行**（源码行号基于 `reference/src/messages.js`）。
-> 对应面板的 DOM 结构见[侧边栏](sidebar.md)与[面板系统](../features/panels.md)；编号与 @命令速查见[前端函数调用速查](../functions.md)。
+> 对应面板的 DOM 结构见[侧边栏](sidebar.md)与[面板系统](md/features/panels.md)；编号与 @命令速查见[前端函数调用速查](md/functions.md)。
 
 ## 通用流程（L14437-14445）
 
@@ -24,7 +24,7 @@
 | 5 | 朋友圈 | `moveinputDo("@&")` | 打开动态 `timelineHolder` |
 | 6 | 搜索 | `moveinputDo("@#")` | 打开用户搜索 `userSearchHolder` |
 | 7 | 排行榜 | `moveinputDo("@^")` | 打开财富榜 `wealthHolder` |
-| 101 | 房间推荐 | `moveinputDo("@+")` | 打开热推房间 `roomSplashHolder`（见[热推房间](../features/hot-rooms.md)） |
+| 101 | 房间推荐 | `moveinputDo("@+")` | 打开热推房间 `roomSplashHolder`（见[热推房间](md/features/hot-rooms.md)） |
 
 ## 二、消费（L14468-14516）
 
@@ -94,7 +94,7 @@
 | 93 | 壁纸加载 | `Utils.service.wallpaperLoading(!Probe.wallpaperLoading)` | 取反切换 |
 | 94 | 系统音量 | `buildSelect(selectArr0_10)` → `Cookie("systemVolume", t)` + `initVolume(2)` | 选值写入 Cookie 并应用 |
 | 95 | 剪贴板解析 | APP：`Main.getClipboardData()` 直接解析；网页：`Utils.sync(3, [...])` 弹输入框粘贴 | 解析剪贴板内容为媒体/文本 |
-| 96 | 自定义功能菜单 | `Utils.service.functionMenu()` | 弹菜单：清屏 / 锁屏 / **上线位置切换**（见[函数速查](../functions.md)第九节） |
+| 96 | 自定义功能菜单 | `Utils.service.functionMenu()` | 弹菜单：清屏 / 锁屏 / **上线位置切换**（见[函数速查](md/functions.md)第九节） |
 | 97 | 壁纸模糊 | `buildSelect(selectArr0_10)` → `Cookie("wallpaperBlur", t)` + `backdropFilter: blur(10t px)` | 0 关闭，1-10 为 10-100px 模糊 |
 | 98 | 广播模式 | `buildSelect(danmakuSelectArr)` → `Utils.danmakuMode(t)` | 切换弹幕模式 |
 | 99 | 壁纸视频 | `Utils.wallpaperVideoSwitch(!Probe.wallpaperVideoSwitch)` | 取反切换 |

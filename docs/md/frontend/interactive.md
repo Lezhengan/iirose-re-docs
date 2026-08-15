@@ -11,7 +11,7 @@
 | `#moveinput`（全局 `moveinput`） | textarea | 聊天输入，**回车发送**（`keydown → Utils.service.inputSend`） | `.val()` 取值；赋值后 `Utils.service.moveinputDo(val)` 发送 | L14125 |
 | `#moveinputSendBtnSend` | div.mdi-send-outline | 点击发送（有内容才发） | `.click()` | messages.html |
 | `#moveinputSendBtnFunc` | div.mdi-arrange-send-backward | 功能发送（切换模式） | `.click()` | messages.html |
-| `#homeHolderMsgContentInputBox` | textarea | 首页频道消息输入：Enter → L33503，**房间tab** `moveinputDo(值)`、**广播等tab** `moveinputDo("~ "+值)`（弹幕）、私信tab 不发 | 赋值后 `Utils.service.moveinputDo(val)`；双框劫持见 [operations.md 方案①](../frontend/operations.md) | L33503 |
+| `#homeHolderMsgContentInputBox` | textarea | 首页频道消息输入：Enter → L33503，**房间tab** `moveinputDo(值)`、**广播等tab** `moveinputDo("~ "+值)`（弹幕）、私信tab 不发 | 赋值后 `Utils.service.moveinputDo(val)`；双框劫持见 [operations.md 方案①](md/frontend/operations.md) | L33503 |
 | `#demandAgent` | input | 侧边栏点播框，**回车点播** `demandFunc(值)` | 赋值后 `demandFunc(val)` | L16580 / messages.html |
 | 各面板动态输入 | input/textarea | 充值金额、搜索框、便签、限制数值等（随面板动态生成） | `$("#panelHolder").find("input").val(x)` | — |
 

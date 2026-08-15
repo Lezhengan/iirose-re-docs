@@ -99,7 +99,7 @@ demandFunc(demandAgent.value);
 |---|---|---|---|
 | 商城 | `8` | `mdi-shopping` | 商城 `mallHolder` |
 | 银行 | `110` | `mdi-bank` | 银行 `bankHolder` |
-| 炒股 | `9` | `mdi-chart-areaspline` | 股票 `stockOldHolder`（**默认可见的股票入口**，数据走 `*` 房间载荷，见[投资/行情](../websocket/commands.md)） |
+| 炒股 | `9` | `mdi-chart-areaspline` | 股票 `stockOldHolder`（**默认可见的股票入口**，数据走 `*` 房间载荷，见[投资/行情](md/websocket/commands.md)） |
 | 商店 | `10` | `mdi-store` | 商店 `shopHolder` |
 | 活动 | `11` | `mdi-briefcase` | 赚钱/活动 `makeMoneyHolder` |
 | 三方 | `111` | `mdi-wallet-giftcard` | 伴侣/三方 `partner` |
@@ -180,7 +180,7 @@ demandFunc(demandAgent.value);
 ## 相关源码
 
 - `functionHolder` / `functionHolderBox` 等全局引用：messages.js L12147-12152
-- 面板开关逻辑：`functionBtnDo(e)` messages.js L14436（完整编号表见[前端函数调用速查](../functions.md)）
+- 面板开关逻辑：`functionBtnDo(e)` messages.js L14436（完整编号表见[前端函数调用速查](md/functions.md)）
 - 折叠分组：`functionBtnDo('*', this)`（L14439）
 
 ## 图标（mdi 字体）来源
