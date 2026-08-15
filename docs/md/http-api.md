@@ -1,11 +1,10 @@
 # HTTP 接口大全
 
-> 均为 GET/POST 明文请求，返回 JSON 字符串或原始文本。**域名按业务拆分**（index.js L114-141）：`a.iirose.com`=API、`b.iirose.com`=业务、`f.iirose.com`=上传、`r.iirose.com`=回显前缀、`z.iirose.com`=辅助(helper)、`w.iirose.com`=代理(agent)、`d.iirose.com`=盾/支付(shield)、`s.iirose.com`=静态、`mx.iirose.com`=地域检测。
-> 下表"域"列省略时即 `https://a.iirose.com/`。
+> 均为 GET/POST 明文请求，返回 JSON 字符串或原始文本。**域名按业务拆分**（index.js L114-141）：`a.iirose.com`=API、`b.iirose.com`=业务、`f.iirose.com`=上传、`r.iirose.com`=回显前缀、`z.iirose.com`=辅助(helper)、`w.iirose.com`=代理(agent)、`d.iirose.com`=盾/支付(shield)、`s.iirose.com`=静态、`mx.iirose.com`=地域检测。各章节标题已标注完整基础 URL，直接拼接接口名即可。
 
 > ⚠️ **股票/加密币/A股行情没有 HTTP 接口**：数据全部走 WS（`Te`/`Tk`/`Ta` 前缀，`socket.send("Te#")` 请求），HTTP 仅有静态 logo 资源（`images/invest/*/icon.json` 与 `.png`）。注意这三个行情面板对应侧边栏**隐藏占位按钮**（`functionBtnDo(112/113/114)`，`display:none`），默认可见的"炒股"按钮（`functionBtnDo(9)`）打开的是旧版 `stockOldHolder` 面板。完整协议见 [投资/行情（WS）](websocket/commands.md#投资行情t-前缀)。
 
-## 登录/账号（`lib/php/system/`）
+## 登录/账号（`https://a.iirose.com/lib/php/system/`）
 
 | 接口 | 方法 | 参数 | 说明 |
 |---|---|---|---|
@@ -35,7 +34,7 @@
 - `loginError` 全表（messages.js L23464-23470）：`1`=用户名不存在、`2`=密码错误、`3`=名字被占、`4`=当日次数上限
 - **手机验证码申请（`$5`）是另一道限流**（messages.js L21764-21767，返回 `4{code}`）：`1`=单 IP 每日最多 30 次、`2`=单账号每日最多 3 次、`4`=剩余次数提示
 
-## 媒体解析（`lib/php/api/`）
+## 媒体解析（`https://a.iirose.com/lib/php/api/`）
 
 > 解析输入"链接"（URL 或分享文本），返回可播放的媒体信息，客户端拼装为 `<> url"名字"封面"作者` 消息格式发送到房间（见 [点播/共享媒体](websocket/commands.md)）。
 > 触发入口是 `Utils.service.moveinputDo("<> 链接")`（L2948-3263 的分发器）。**部分平台不走 API，直接拼 WS 命令**（下表"方式"列）。
@@ -80,14 +79,14 @@
 | 3 | 太合 | `%8` | 5sing |
 | 4 | 酷狗 | — | — |
 
-## 支付（`lib/php/system/`）
+## 支付（`https://d.iirose.com/lib/php/system/` / `iirose.com` 本域）
 
-| 接口 | 域 | 参数 | 说明 |
-|---|---|---|---|
-| `pay.php` | `d.iirose.com`（`Urls.shield`） | `i`=支付token | 支付跳转（L25793，弹窗/新页打开） |
-| `lib/html/wechatPay.html#token` | `iirose.com` 本域 | — | 微信扫码支付页（`wechatPay.html#` + token） |
+| 接口 | 参数 | 说明 |
+|---|---|---|
+| `pay.php` | `i`=支付token | 支付跳转（L25793，弹窗/新页打开） |
+| `lib/html/wechatPay.html#token` | — | 微信扫码支付页（`https://iirose.com/lib/html/wechatPay.html#` + token） |
 
-## 工具/数据（`lib/php/function/`）
+## 工具/数据（`https://a.iirose.com/lib/php/function/`）
 
 | 接口 | 域 | 参数 | 说明 |
 |---|---|---|---|
@@ -101,14 +100,14 @@
 | `push.php` | POST | `act=reg` + 推送token | 推送服务注册（消息推送提醒，L16798） |
 | `debug.php` | — | — | 调试接口（index.js L503） |
 
-## 上传
+## 上传（`https://f.iirose.com/` → 回显 `http://r.iirose.com/`）
 
 **上传域与展示域分离**：上传走 `f.iirose.com`，服务器返回**相对路径**，前端再拼接 `http://r.iirose.com/` 前缀得到完整资源 URL（图片 URL 形如 `http://r.iirose.com/i/年/月/日/时/文件名.png`）。
 
-| 接口 | 域 | 参数 | 说明 |
-|---|---|---|---|
-| `lib/php/system/file_upload.php` | `https://f.iirose.com/`（`Urls.upload.img`） | `i`=uid, `f[]`=文件 | 上传文件；返回**相对路径**文本（图片以 `i/` 开头） |
-| — | `http://r.iirose.com/`（`Urls.uploadedPrefix.img`） | — | 回显前缀，前端拼接：`Constant.URL.uploadedPrefixImg + responseText` |
+| 接口 | 参数 | 说明 |
+|---|---|---|
+| `lib/php/system/file_upload.php` | `i`=uid, `f[]`=文件 | 上传文件；返回**相对路径**文本（图片以 `i/` 开头） |
+| — | — | `http://r.iirose.com/`（`Urls.uploadedPrefix.img`）= 回显前缀，前端拼接：`Constant.URL.uploadedPrefixImg + responseText` |
 
 ```js
 // 完整链路（源码：messages.js L6233 uploadImg / L9640 URL 配置）
