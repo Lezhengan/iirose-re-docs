@@ -69,6 +69,7 @@ sessionStorage["autologin"] = 2   // 自动登录标记
 |---|---|
 | 官方网页/Electron | `wss://m{0,1,2,8}.iirose.com:443`（`isSocketHttp` 时 `ws://…:80` 明文） |
 | iirosebot（第三方 bot） | `ws://m{0,1,2,""}.iirose.com:8777`（明文，按 `[0,1,2,None,8]` 轮换，失败 +1 并等 5 秒） |
+| adapter-iirose（第三方 bot） | `wss://m1.iirose.com:8778` 等（节点 `m1/m2/m8/m9/m`，并行测速选最快） |
 
 ### 登录包：`*` + JSON
 
@@ -86,10 +87,10 @@ socket.send("*" + JSON.stringify({
   st: "在线状态标记",
   mo: "心情/简介",
   mb: "客户端标识",
-  mu: "流量模式",
+  mu: "01",            // 流量模式（关系到媒体播放，adapter 固定 "01"）
   rp: "房间密码",        // 密码房
   lr: "旧房间id",        // 切房后认证（iirosebot 带）
-  fp: "@" + 32位随机串, // 指纹（Cookie fp 存在则沿用；iirosebot 用 "@" + md5(用户名)）
+  fp: "@" + md5(用户名), // 指纹（Cookie fp 存在则沿用；iirosebot / adapter 用 "@" + md5(用户名)）
   nt: "", vc: 0, ev: 0,  // 通知偏好 / 音效 / 环境音
   ros/roi/ron: …         // 角色扮演房：角色性别/头像/名字
 }))
@@ -111,5 +112,6 @@ socket.send("*" + JSON.stringify({
 
 ### 消息压缩与心跳
 
-- **gzip**：接收数据首字节为 `1` 时，剩余部分为 gzip 压缩内容
-- **心跳**：官方前端收到服务端 `c` 后回发 `c`（每 2 秒）；iirosebot 直接发**空串 `''`** 每 60 秒保活
+- **gzip**：接收数据首字节为 `1` 时，剩余部分为 gzip 压缩内容；发送侧 > 256 字节时同样 gzip + 首字节 `1`（需 `binaryType='arraybuffer'`）
+- **心跳**：官方前端收到服务端 `c` 后回发 `c`（每 2 秒）；adapter-iirose 每 30 秒直接发**空串 `''`** 保活
+- **密码 MD5 判定**：登录包 `p` 若是 32 位小写 hex 则直接用，否则先 `md5(密码)`（adapter `getMd5Password`）

@@ -12,6 +12,7 @@
     * [传输层](md/websocket/transport.md)
     * [发送命令](md/websocket/commands.md)
     * [接收路由](md/websocket/messages.md)
+    * [第三方机器人开发](md/websocket/third-party.md)
 * 前端专区
   * [前端函数调用速查](md/functions.md)
   * [DOM 与组件](md/frontend/dom.md)
