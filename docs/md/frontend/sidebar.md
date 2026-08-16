@@ -105,7 +105,7 @@ demandFunc(demandAgent.value);
 | 三方 | `111` | `mdi-wallet-giftcard` | 伴侣/三方 `partner` |
 | （加密币） | `112` | `mdi-bitcoin` | 加密币行情 `cryptoHolder`（`display:none` **隐藏占位**，空文案，用 `functionBtnDo(112)` 调出） |
 | （股票） | `113` | `mdi-chart-box` | 美股行情 `stockHolder`（`display:none` **隐藏占位**，空文案，用 `functionBtnDo(113)` 调出） |
-| （中华币） | `114` | `mdi-chart-line` | A股行情 `chinaHolder`（`display:none` **隐藏占位**，空文案，用 `functionBtnDo(114)` 调出） |
+| （A股） | `114` | `mdi-chart-line` | A股行情 `chinaHolder`（`display:none` **隐藏占位**，空文案，用 `functionBtnDo(114)` 调出） |
 
 ### 工具
 

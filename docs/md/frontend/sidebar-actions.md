@@ -38,7 +38,7 @@
 | 111 | 三方 | `moveinputDo("@;")` | 打开伴侣 `partner` |
 | 112 | 加密币 | `Init.movePanel(12)` + `panelAnimate(25, 1, 0, "cryptoHolder")` + `socket.send("Tk#")` | 打开行情面板并**请求加密币行情** |
 | 113 | 股票 | `Init.movePanel(13)` + `panelAnimate(25, 1, 0, "stockHolder")` + `socket.send("Te#")` | 打开行情面板并**请求股票行情** |
-| 114 | 中华币 | `Init.movePanel(14)` + `panelAnimate(25, 1, 0, "chinaHolder")` + `socket.send("Ta#")` | 打开行情面板并**请求中华币行情** |
+| 114 | A股 | `Init.movePanel(14)` + `panelAnimate(25, 1, 0, "chinaHolder")` + `socket.send("Ta#")` | 打开行情面板并**请求A股行情** |
 
 ## 三、工具（L14483-14516）
 

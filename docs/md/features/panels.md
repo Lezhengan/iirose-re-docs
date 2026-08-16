@@ -21,7 +21,7 @@
 | `stockOldHolder` | — | 股票 |
 | `cryptoHolder` | — | 加密币行情 |
 | `stockHolder` | — | 股票行情 |
-| `chinaHolder` | — | 中华币行情 |
+| `chinaHolder` | — | A股行情 |
 | `timelineHolder` | — | 动态（朋友圈） |
 | `taskHolder` | — | 任务 |
 | `forumHolder` | — | 论坛 |

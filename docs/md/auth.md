@@ -73,7 +73,7 @@ sessionStorage["autologin"] = 2   // 自动登录标记
 
 ### 登录包：`*` + JSON
 
-连接建立后立即发送（`fetchroom`，messages.js L23720-23733）：
+连接建立后立即发送：
 
 ```js
 socket.send("*" + JSON.stringify({
@@ -91,7 +91,9 @@ socket.send("*" + JSON.stringify({
   rp: "房间密码",        // 密码房
   lr: "旧房间id",        // 切房后认证（iirosebot 带）
   fp: "@" + md5(用户名), // 指纹：adapter / iirosebot 用 "@" + md5(用户名)；官方前端用 "@" + 32 位随机串（见 commands.md）
-  nt: "", vc: 0, ev: 0,  // 通知偏好 / 音效 / 环境音
+  nt: "",              // 通知码（localStorage noticeCode 按房间取）
+  vc: "1092",          // 客户端版本号 realAppVersion（device=5 时后接 ",设备版本"）
+  ev: "rose",          // 环境标识（Cookie("env")，默认 "rose"）
   ros/roi/ron: …         // 角色扮演房：角色性别/头像/名字
 }))
 ```
