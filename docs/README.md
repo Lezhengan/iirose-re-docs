@@ -106,4 +106,4 @@ node serve.js
 
 ---
 
-[CC BY-NC-ND 4.0（署名-非商业性使用-禁止演绎）](LICENSE) · Copyright (c) 2026 乐正安 · 仅供个人学习交流，禁止商用
+[CC BY-NC-ND 4.0（署名-非商业性使用-禁止演绎）](https://github.com/Lezhengan/iirose-re-docs/blob/main/LICENSE) · Copyright (c) 2026 乐正安 · 仅供个人学习交流，禁止商用
