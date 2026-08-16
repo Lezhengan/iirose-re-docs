@@ -1,6 +1,41 @@
-# 第三方机器人开发（adapter-iirose 交叉验证）
+# 第三方开发指南（机器人 & 客户端）
 
-> 本章专门面向**第三方花园机器人 / 自定义客户端**开发。结论来自对官方前端 `messages.js` 与 [koishi adapter-iirose](https://github.com/iirose-plugins/adapter-iirose)（`src/utils/ws/*`、`src/encoder/*`、`src/decoder/*`）的交叉比对，已用一套可运行实现验证。与官方网页端的差异会单独标注。
+> 本章是**所有第三方开发者**的入口文档，覆盖**机器人**（自动收发消息）和**自定义客户端**（替代官方 UI）两大场景。内容来自官方前端 `messages.js` 与 [koishi adapter-iirose](https://github.com/iirose-plugins/adapter-iirose)（`src/utils/ws/*`、`src/encoder/*`、`src/decoder/*`）的交叉比对，已用一套可运行实现验证。与官方网页端的差异会单独标注。
+
+## 整体架构：WS + HTTP 双通道
+
+蔷薇花园的通信模型是「**WS 承载房间内实时交互 + HTTP 承载辅助服务**」，第三方开发需要同时理解两者：
+
+```
+┌─ 第三方客户端 / 机器人 ──────────────────────────────────┐
+│                                                          │
+│  ┌─ WS（wss://m1.iirose.com:8778）────────────────────┐  │
+│  │  • 进房认证（* + JSON）                            │  │
+│  │  • 聊天 / 私聊 / 广播 / 弹幕                        │  │
+│  │  • 股票 / 银行 / 商店 / 论坛 / 任务 / 朋友圈         │  │
+│  │  • 点歌 / 点播 / 媒体管理                           │  │
+│  │  • 关注 / 点赞 / 打分 / 转账                        │  │
+│  │  • 房主管理 / 踢人 / 禁言                           │  │
+│  │  • 用户资料 / 排行榜 / 房间列表                      │  │
+│  └────────────────────────────────────────────────────┘  │
+│                                                          │
+│  ┌─ HTTP ────────────────────────────────────────────┐  │
+│  │  • 登录（限流检查）  → a.iirose.com/lib/php/system/ │  │
+│  │  • 媒体解析（网易云/QQ/B站等）→ a.iirose.com/lib/php/api/ │
+│  │  • 翻译  → a.iirose.com/lib/php/function/         │  │
+│  │  • 支付  → d.iirose.com                           │  │
+│  │  • 文件/图片上传 → f.iirose.com                     │  │
+│  │  • 用户名搜索  → 见 http-api.md                    │  │
+│  └────────────────────────────────────────────────────┘  │
+│                                                          │
+│  ┌─ 静态资源 ────────────────────────────────────────┐  │
+│  │  • 头像  → s.iirose.com/images/icon/              │  │
+│  │  • 上传回显 → r.iirose.com                         │  │
+│  └────────────────────────────────────────────────────┘  │
+└──────────────────────────────────────────────────────────┘
+```
+
+> 详细 HTTP 接口（完整 URL、参数、响应）见 [http-api.md](md/http-api.md)；域名与节点划分见 [域名与节点](md/domains.md)；通用架构见 [应用架构](md/architecture.md)。
 
 ## 核心结论
 
@@ -400,6 +435,82 @@ setInterval(() => {
   if (ws.readyState === 1) send(ws, '');
 }, 30_000);
 ```
+
+## 8. 客户端开发额外要点
+
+机器人只需收发消息，**自定义客户端**还需要实现 UI 渲染、媒体播放、文件交互等。以下按功能模块列出相关文档入口：
+
+### 8.1 消息渲染
+
+| 需求 | 参考文档 |
+|---|---|
+| 公屏/私聊消息字段结构 | [接收路由 § 聊天消息](md/websocket/messages.md)（本文第 6.2 节也有摘要） |
+| 消息中的特殊格式：@用户 `[*name*]`、@房间 `[_id_]`、引用 `(_hr)…(hr_)`、图片 `[url#e]`、语音 `.weba`、链接 `\url`、Markdown `\\\*` | 本文第 5.1 节 |
+| 消息卡片 DOM 结构（媒体卡片、通知卡片等） | [花园卡片 DOM](md/frontend/cards.md) |
+| 用户消息颜色 `mc` 字段 | 6 位 hex，本文第 5.1 节 |
+
+### 8.2 媒体播放
+
+| 需求 | 参考文档 |
+|---|---|
+| 链接 → 媒体解析（获取可播放 URL） | [http-api.md § 媒体解析](md/http-api) |
+| 点播/点歌 WS 命令 | 本文第 5.6 节（`&1{JSON}`、`m__4`、`dv3`） |
+| 平台标识码（网易云 `@0`、QQ `@2`、B站 `!3` 等） | 本文第 5.6 节平台标识表 |
+| 媒体房管理（切歌、清空、快进等） | 本文第 5.8 节 |
+| 媒体系统面板（点歌面板、播放器 UI） | [媒体系统面板](md/features/media-panels.md) |
+
+### 8.3 文件上传
+
+| 需求 | 参考文档 |
+|---|---|
+| 上传 HTTP 接口 | [http-api.md § 上传](md/http-api) |
+| 上传后回显 URL 规则 | `http://r.iirose.com/` + 相对路径；图片以 `i/` 开头 |
+| 图片/文件消息格式 | `[url#e]`（图片）、`[url]`（文件），本文第 5.1 节 |
+
+### 8.4 用户界面
+
+| 需求 | 参考文档 |
+|---|---|
+| 用户资料解析（按用户名查询的回包字段） | 本文第 6.5 节 `+-` 前缀；[接收路由](md/websocket/messages.md) |
+| 他人名片（whois 资料卡）的 DOM 与字段 | [用户名片](md/frontend/profile-card.md) |
+| 自身资料编辑（`$2` 命令 + 面板） | [个人资料编辑](md/frontend/user-info.md) |
+| 头像 URL 规则 | `http://s.iirose.com/images/icon/{avatar}.jpg`（本文第 6.1 节） |
+| 在线状态 `st` 取值 | 本文第 3 节状态表 |
+
+### 8.5 面板系统
+
+| 需求 | 参考文档 |
+|---|---|
+| 全部面板编号 ↔ 名称 ↔ 面板 DOM 容器 | [面板系统](md/features/panels.md) |
+| 经济面板（股票、银行、商店） | [经济系统面板](md/features/economy-panels.md) |
+| 社交面板（论坛、任务、朋友圈） | [社交功能面板](md/features/social-panels.md) |
+| 游戏模拟器面板 | [游戏模拟器面板](md/features/game-emulator.md) |
+| 其他面板（地图、设置、通知等） | [其他面板](md/features/misc-panels.md) |
+| 侧边栏按钮编号 ↔ 行为 | [侧边栏](md/frontend/sidebar.md)、[按钮内部行为](md/frontend/sidebar-actions.md) |
+
+### 8.6 房间与地图
+
+| 需求 | 参考文档 |
+|---|---|
+| 房间列表/地图数据解析 | [地图与房间数据](md/features/map.md) |
+| 热推房间算法 | [热推房间](md/features/hot-rooms.md) |
+| 大包解析（`%` 前缀，用户+房间列表） | 本文第 6.1 节；[接收路由](md/websocket/messages.md) |
+
+### 8.7 前端函数参考
+
+| 需求 | 参考文档 |
+|---|---|
+| 官方前端可调用的全局函数（`functionBtnDo`、`Utils.*` 等） | [前端函数调用速查](md/functions.md) |
+| 可交互 DOM 元素（输入框、按钮等） | [可交互 DOM 全解](md/frontend/interactive.md) |
+| JS 操作与自定义方案 | [JS 操作与自定义](md/frontend/operations.md) |
+
+### 8.8 其他
+
+| 需求 | 参考文档 |
+|---|---|
+| P2P 通话（WebRTC 信令） | [P2P（WebRTC）](md/p2p.md) |
+| Electron 壳相关 | [Electron 壳](md/electron.md) |
+| 全局对象速查（`Init`、`Mod`、`Utils` 等） | [核心全局对象](md/global-objects.md) |
 
 ---
 
