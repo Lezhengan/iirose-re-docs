@@ -81,7 +81,7 @@ if (buf.length > 256) {
 ## 断线重连
 
 - **应用层心跳**：服务端不发 WebSocket 层 ping/pong，但会推送应用层 `c` 消息；客户端收到后通过 `patchedSetInterval` 每 2 秒回发一次 `socket.send("c")` 保活（L13687-13690）
-- **第三方心跳差异**：adapter-iirose 不依赖服务端 `c`，而是每 30 秒主动发送**空字符串 `''`** 保活（`readyState===1` 时；`2/3` 或 socket 为空则触发重连）。两种心跳都可行（详见 [third-party.md](md/websocket/third-party?id=心跳与重连)）
+- **第三方心跳差异**：adapter-iirose 不依赖服务端 `c`，而是每 30 秒主动发送**空字符串 `''`** 保活（`readyState===1` 时；`2/3` 或 socket 为空则触发重连）。两种心跳都可行（详见 [third-party.md](md/websocket/third-party?id=4-心跳与重连)）
 - **断线**（`socket.onclose`）→ `location._reload()` **整页刷新**重新连接（不是透明重连）
 - **连接失败**（`socket.onerror`）→ `socketRetry()` 删掉旧 socket 重建（L4424-4426），即换下一个节点重连——**无限重试，无重试次数上限**
 - **被限流的表现**：服务端若对来源 IP 做了临时限制，前端**没有任何业务提示**（无"IP 被封"字样），只会表现为"连不上 → 换节点无限重试"（详见 [http-api.md 登录限流](md/http-api?id=登录错误码--请求限流)）

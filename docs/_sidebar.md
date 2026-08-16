@@ -30,7 +30,7 @@
       * [社交功能面板](md/features/social-panels.md)
       * [媒体系统面板](md/features/media-panels.md)
       * [游戏模拟器面板](md/features/game-emulator.md)
-      * [其他面板](md/features/misc-panels.md)
+      * [其他面板](md/frontend/misc-panels.md)
   * [JS 操作与自定义](md/frontend/operations.md)
     * [操作 DOM / JS 自定义](md/frontend/operations.md)
     * [可交互 DOM 全解](md/frontend/interactive.md)

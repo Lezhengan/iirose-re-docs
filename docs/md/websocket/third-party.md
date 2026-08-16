@@ -485,7 +485,7 @@ setInterval(() => {
 | 经济面板（股票、银行、商店） | [经济系统面板](md/features/economy-panels.md) |
 | 社交面板（论坛、任务、朋友圈） | [社交功能面板](md/features/social-panels.md) |
 | 游戏模拟器面板 | [游戏模拟器面板](md/features/game-emulator.md) |
-| 其他面板（地图、设置、通知等） | [其他面板](md/features/misc-panels.md) |
+| 其他面板（地图、设置、通知等） | [其他面板](md/frontend/misc-panels.md) |
 | 侧边栏按钮编号 ↔ 行为 | [侧边栏](md/frontend/sidebar.md)、[按钮内部行为](md/frontend/sidebar-actions.md) |
 
 ### 8.6 房间与地图
