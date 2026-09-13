@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>IIROSE 逆向文档</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  <style>
+    /* 禁用 docsify 默认的 Google Fonts（fonts.gstatic.com 在部分网络下不可达），回退系统字体 */
+    :root {
+      --font-family: -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+      --font-family-mono: Consolas, "Courier New", monospace;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    window.$docsify = {
+      name: 'IIROSE 机器人开发文档',
+      nameLink: '/',
+      repo: 'https://github.com/Lezhengan/iirose-re-docs',
+      loadSidebar: true,
+      subMaxLevel: 0,
+      maxLevel: 4,
+      search: {
+        placeholder: '搜索',
+        noData: '没有结果',
+        depth: 4
+      },
+      coverpage: false,
+      plugins: [
+        function (hook) {
+          // 全站页尾免责声明：逆向不保证完全正确
+          // 用 beforeEach（渲染前注入），否则追加的 Markdown 不会被渲染成格式
+          hook.beforeEach(function (content) {
+            return content +
+              '\n\n---\n\n' +
+              '> ⚠️ **免责声明**：本文档为**逆向分析**产物，文中协议、字段、源码行号等**不保证完全正确**，' +
+              '可能与线上实际行为存在出入，请以实测为准。仅供学习交流，违规使用可能导致账号封禁。';
+          });
+        }
+      ]
+    }
+  </script>
+  <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
+</body>
+</html>

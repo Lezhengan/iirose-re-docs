@@ -1,0 +1,21 @@
+# 逆向产出快照：必须原样入库，禁止任何行尾转换。
+#
+# 这些文件是「验证基线」中散列所对应的原始产物。若 Git 在检出时把 LF 转成 CRLF
+# （Windows 默认 core.autocrlf=true 就会这样），本地文件散列将与 verification.md
+# 声明的值不一致，sha256sum 校验会直接失败。
+#
+# text   保留文本属性，使 Git 在检出时执行行尾规范化
+# eol=lf 明确检出与入库都使用 LF，跨平台一致
+docs/reference/src/*.js         text eol=lf
+docs/reference/*.txt            text eol=lf
+docs/reference/*.json           text eol=lf
+
+# 文档源码：统一 LF，避免跨平台 diff 噪声
+*.md                            text eol=lf
+*.html                          text eol=lf
+*.js                            text eol=lf
+*.yml                           text eol=lf
+*.yaml                          text eol=lf
+
+# 属性文件自身也固定为 LF
+.gitattributes                   text eol=lf
